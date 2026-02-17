@@ -65,10 +65,12 @@
     }
     .col-12 { grid-column: span 12; }
     .col-8  { grid-column: span 8; }
+    .col-7  { grid-column: span 7; }
     .col-6  { grid-column: span 6; }
     .col-4  { grid-column: span 4; }
     .col-3  { grid-column: span 3; }
     .col-2  { grid-column: span 2; }
+    .col-1  { grid-column: span 1; }
 
     label { display: block; font-weight: 600; margin-bottom: 4px; }
     input[type="text"], input[type="email"], input[type="date"], input[type="number"], select {
@@ -76,7 +78,7 @@
       padding: 10px 12px;
       border: 1px solid var(--border);
       border-radius: 6px;
-      font-size: 0.95rem;
+      font-size: 1rem;
     }
     .inline {
       display: flex; flex-wrap: wrap; gap: var(--space-sm);
@@ -100,6 +102,30 @@
     .line { border-top: 1px solid #000; padding-top: var(--space-xxs); text-align: center; }
     .footer-note { font-size: 0.9rem; color: var(--muted); }
     .dateplace { margin-top: var(--space-lg); }
+
+    @media (max-width: 760px) {
+      .page {
+        padding: var(--space-lg) var(--space-sm);
+      }
+      h1 {
+        font-size: 1.35rem;
+      }
+      .grid {
+        grid-template-columns: 1fr;
+      }
+      .col-12, .col-8, .col-7, .col-6, .col-4, .col-3, .col-2, .col-1 {
+        grid-column: auto;
+      }
+      .sign {
+        grid-template-columns: 1fr;
+      }
+      .terms {
+        padding: var(--space-sm);
+      }
+      .inline {
+        align-items: flex-start;
+      }
+    }
 
     @media print {
       header { border-bottom: none; }
