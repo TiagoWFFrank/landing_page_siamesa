@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Centro de Instrução Mirim — Página do Contrato (Ribeirão Preto)</title>
+  <style>
+    :root {
+      --maxw: 900px;
+      --space-xxs: 6px;
+      --space-xs: 10px;
+      --space-sm: 14px;
+      --space-md: 18px;
+      --space-lg: 24px;
+      --space-xl: 36px;
+      --border: #e3e3e3;
+      --ink: #111;
+      --muted: #575757;
+      --brand: #c00;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--ink);
+      line-height: 1.4;
+      margin: 0;
+      background: #fff;
+    }
+    .page {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      padding: var(--space-xl) var(--space-md);
+    }
+    header {
+      border-bottom: 2px solid var(--border);
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-sm);
+    }
+    h1 {
+      font-size: 1.6rem;
+      margin: 0 0 var(--space-xs) 0;
+      letter-spacing: 0.1px;
+    }
+    .subtitle {
+      color: var(--muted);
+      margin: 0;
+    }
+    section { margin-bottom: var(--space-xl); }
+    h2 {
+      font-size: 1.1rem;
+      margin: 0 0 var(--space-sm);
+      border-left: 4px solid var(--brand);
+      padding-left: 10px;
+    }
+    fieldset {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: var(--space-sm);
+      margin: 0 0 var(--space-md);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: var(--space-sm);
+    }
+    .col-12 { grid-column: span 12; }
+    .col-8  { grid-column: span 8; }
+    .col-6  { grid-column: span 6; }
+    .col-4  { grid-column: span 4; }
+    .col-3  { grid-column: span 3; }
+    .col-2  { grid-column: span 2; }
+
+    label { display: block; font-weight: 600; margin-bottom: 4px; }
+    input[type="text"], input[type="email"], input[type="date"], input[type="number"], select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    .inline {
+      display: flex; flex-wrap: wrap; gap: var(--space-sm);
+      align-items: center;
+    }
+    .inline label { font-weight: 500; margin: 0 6px 0 0; }
+    .muted { color: var(--muted); }
+    .terms {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: var(--space-md);
+      background: #fafafa;
+    }
+    .clause { margin-bottom: var(--space-md); }
+    .sign {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-lg);
+      margin-top: var(--space-lg);
+    }
+    .line { border-top: 1px solid #000; padding-top: var(--space-xxs); text-align: center; }
+    .footer-note { font-size: 0.9rem; color: var(--muted); }
+    .dateplace { margin-top: var(--space-lg); }
+
+    @media print {
+      header { border-bottom: none; }
+      .page { padding: 0; }
+      a[href]::after { content: ""; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <h1>Centro de Instrução Mirim — Página do Contrato</h1>
+      <p class="subtitle">CHARLIE SIERRA RIBEIRÃO PRETO CURSOS E TREINAMENTOS LTDA — CNPJ: 49.749.571/0001-12</p>
+    </header>
+
+    <section>
+      <h2>1. Dados do Contratante</h2>
+      <fieldset>
+        <div class="grid">
+          <div class="col-8">
+            <label for="contratante">Sr.(a)</label>
+            <input id="contratante" type="text" placeholder="Nome completo" />
+          </div>
+          <div class="col-2">
+            <label for="nasc">Nasc.</label>
+            <input id="nasc" type="date" />
+          </div>
+          <div class="col-2">
+            <label for="rg">RG</label>
+            <input id="rg" type="text" />
+          </div>
+          <div class="col-3">
+            <label for="cpf">CPF</label>
+            <input id="cpf" type="text" />
+          </div>
+          <div class="col-7">
+            <label for="endereco">Endereço</label>
+            <input id="endereco" type="text" placeholder="Rua/Avenida" />
+          </div>
+          <div class="col-1">
+            <label for="numero">Nº</label>
+            <input id="numero" type="text" />
+          </div>
+          <div class="col-1">
+            <label for="compl">Compl.</label>
+            <input id="compl" type="text" />
+          </div>
+          <div class="col-4">
+            <label for="bairro">Bairro</label>
+            <input id="bairro" type="text" />
+          </div>
+          <div class="col-2">
+            <label for="cep">CEP</label>
+            <input id="cep" type="text" />
+          </div>
+          <div class="col-3">
+            <label for="cidade">Cidade</label>
+            <input id="cidade" type="text" />
+          </div>
+          <div class="col-4">
+            <label for="whats">Whats</label>
+            <input id="whats" type="text" />
+          </div>
+          <div class="col-4">
+            <label for="celular">Celular</label>
+            <input id="celular" type="text" />
+          </div>
+          <div class="col-4">
+            <label for="recado">Recado</label>
+            <input id="recado" type="text" />
+          </div>
+          <div class="col-12">
+            <label for="email">E-mail</label>
+            <input id="email" type="email" placeholder="email@exemplo.com" />
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend class="muted" style="padding:0 var(--space-xs)">Dados do Aluno</legend>
+        <div class="grid">
+          <div class="col-8">
+            <label for="aluno">Nome do Aluno</label>
+            <input id="aluno" type="text" />
+          </div>
+          <div class="col-2">
+            <label for="nascAluno">Nasc.</label>
+            <input id="nascAluno" type="date" />
+          </div>
+          <div class="col-1">
+            <label for="rgAluno">RG</label>
+            <input id="rgAluno" type="text" />
+          </div>
+          <div class="col-1">
+            <label for="cpfAluno">CPF</label>
+            <input id="cpfAluno" type="text" />
+          </div>
+        </div>
+      </fieldset>
+    </section>
+
+    <section>
+      <h2>2. Curso Contratado e Condições de Pagamento</h2>
+      <fieldset>
+        <div class="grid">
+          <div class="col-6">
+            <label for="curso">Curso</label>
+            <input id="curso" type="text" value="CENTRO DE INSTRUÇÃO MIRIM" />
+          </div>
+          <div class="col-3">
+            <label for="parcelas">Nº Parcelas</label>
+            <input id="parcelas" type="number" value="22" />
+          </div>
+          <div class="col-3">
+            <label for="valorParcela">Valor (R$)</label>
+            <input id="valorParcela" type="text" value="217,00" />
+          </div>
+          <div class="col-3">
+            <label for="inscricao">Inscrição (R$)</label>
+            <input id="inscricao" type="text" placeholder="R$ ____" />
+          </div>
+          <div class="col-3">
+            <label for="dataInscricao">Data</label>
+            <input id="dataInscricao" type="date" />
+          </div>
+          <div class="col-3">
+            <label for="valorMensal">Valor mensal (R$)</label>
+            <input id="valorMensal" type="text" placeholder="R$ ____" />
+          </div>
+          <div class="col-3">
+            <label for="dataPrimeira">1ª Parcela em diante</label>
+            <input id="dataPrimeira" type="date" />
+          </div>
+          <div class="col-3">
+            <label for="inicio">Início</label>
+            <input id="inicio" type="date" />
+          </div>
+        </div>
+
+        <div class="grid" style="margin-top: var(--space-sm)">
+          <div class="col-6">
+            <label>Horários</label>
+            <div class="inline">
+              <label><input type="checkbox" /> 08:30 ás 11:00</label>
+              <label><input type="checkbox" /> 11:30 ás 14:00</label>
+              <label><input type="checkbox" /> 14:30 ás 17:00</label>
+            </div>
+          </div>
+          <div class="col-6">
+            <label>Melhor horário para ligação</label>
+            <div class="inline">
+              <label><input type="checkbox" /> Manhã</label>
+              <label><input type="checkbox" /> Tarde</label>
+              <label><input type="checkbox" /> Qualquer horário</label>
+            </div>
+          </div>
+          <div class="col-12">
+            <label>Tamanho de camiseta</label>
+            <div class="inline">
+              <label><input type="checkbox" /> 6</label>
+              <label><input type="checkbox" /> 8</label>
+              <label><input type="checkbox" /> 10</label>
+              <label><input type="checkbox" /> 12</label>
+              <label><input type="checkbox" /> 14</label>
+              <label><input type="checkbox" /> 16</label>
+              <label><input type="checkbox" /> P</label>
+              <label><input type="checkbox" /> M</label>
+              <label><input type="checkbox" /> G</label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+    </section>
+
+    <section>
+      <h2>Termos e Condições</h2>
+      <div class="terms">
+        <div class="clause">
+          <strong>1ª.</strong> O CONTRATANTE firma, neste ato, os serviços da CONTRATADA para ministrar o CURSO CENTRO DE INSTRUÇÃO MIRIM em seu polo educacional, através de Sistema de Ensino Presencial, que compreende aulas teóricas, práticas, exercícios e atividades extras.
+        </div>
+        <div class="clause">
+          <strong>1.2ª.</strong> A CONTRATADA se compromete a ministrar o curso presencial nos dias e horários especificados com aulas presenciais nas dependências do Polo Educacional estabelecido na <em>Av. Eduardo Andréa Matarazzo, 891 - Vila Albertina, Ribeirão Preto/SP</em>.<br/>
+          <em>OBS:</em> O endereço poderá ser alterado com o aviso da CONTRATADA, obrigando-se a comunicar antecipadamente, via telefone, e-mail e/ou redes sociais.
+        </div>
+        <div class="clause">
+          <strong>1.3ª.</strong> A CONTRATADA se compromete a ministrar o curso online quando necessário, obrigando-se a comunicar antecipadamente, via telefone, e-mail e/ou redes sociais.
+        </div>
+        <div class="clause">
+          <strong>2ª.</strong> O curso oferecido pela CONTRATADA está em conformidade com a legislação educacional brasileira, conforme DECRETO nº 5.154 de 23 de dezembro de 2004, sendo cursos voltados para a capacitação, aperfeiçoamento, especialização e atualização, objetivando o desenvolvimento de aptidões para a vida produtiva e social e, portanto, como qualquer curso livre, não necessita de aprovação e reconhecimento pelo MEC.
+        </div>
+        <div class="clause">
+          <strong>3ª.</strong> O valor normal mensal (parcela integral) do curso mencionado acima é de R$ 317,00 (trezentos e dezessete reais), no entanto, por se tratar de um aluno com bolsa parcial, o CONTRATANTE receberá um benefício em forma de desconto no valor de 100 reais (cem reais).
+        </div>
+        <div class="clause">
+          <strong>4ª.</strong> CAMISETA: Será ofertado no segundo mês de curso no valor de 60 reais (sessenta reais).
+        </div>
+        <div class="clause">
+          <strong>5ª.</strong> Material didático (APOSTILA): Será ofertado no segundo mês de curso no valor de 77 reais (setenta e sete reais), podendo haver alteração de valor mediante aviso prévio.
+        </div>
+        <div class="clause">
+          <strong>6ª.</strong> A partir da segunda parcela, o pagamento do referido curso será efetuado conforme estipulado no item 2, através da FORMA ESTIPULADA PELA CONTRATADA, na rede bancária, lotéricas, internet ou outro meio de pagamento estipulado pela CONTRATADA.
+        </div>
+        <div class="clause">
+          <strong>7ª.</strong> Se por motivo de faltas o aluno não terminar o curso no prazo previsto, serão emitidas parcelas extras até a conclusão do curso.
+        </div>
+        <div class="clause">
+          <strong>8ª.</strong> Na hipótese de inadimplência (atraso no pagamento), o CONTRATANTE perderá o bônus pontualidade, obrigando-se ao pagamento das parcelas conforme o valor determinado no item 2 deste contrato, acrescidas de multa de 2% ao mês e juros mora de 0,25% ao dia sobre o valor de cada parcela vencida. O recebimento de determinada parcela não significará quitação das parcelas anteriores vencidas e não pagas.
+        </div>
+        <div class="clause">
+          <strong>9ª.</strong> No caso de inadimplência das parcelas decorrentes deste contrato superior a 31 (trinta e um) dias de atraso, será acionado o Cartório de Protestos de Títulos e Documentos, nos termos do artigo 43, § 2º da Lei 8078/90 do Código de Defesa do Consumidor ou solicitada a inclusão do nome do CONTRATANTE junto ao SPC (Serviço de Proteção ao Crédito).
+        </div>
+        <div class="clause">
+          <strong>10ª.</strong> Os custos de cobrança com Taxas de Cartório e/ou Taxa de Exclusão do SPC/SERASA, Honorários Advocatícios ou qualquer outro tipo de taxa será de responsabilidade do CONTRATANTE.
+        </div>
+        <div class="clause">
+          <strong>11ª.</strong> O presente contrato será automaticamente cancelado no caso de inadimplência superior a 61 (sessenta e um) dias, ficando o CONTRATANTE com débitos pendentes referentes às parcelas vencidas, a parcela do mês do cancelamento e a multa contratual, conforme previsto na cláusula 16ª.
+        </div>
+        <div class="clause">
+          <strong>12ª.</strong> O CONTRATANTE poderá rescindir o presente contrato, devendo notificar à CONTRATADA através de formulário próprio e o protocolado na secretaria da mesma. <strong>Não será aceita solicitação de cancelamento por telefone.</strong>
+        </div>
+        <div class="clause">
+          <strong>13ª.</strong> A simples desistência ou interrupção à frequência nas aulas não formalizada e protocolada junto à CONTRATADA não isenta o CONTRATANTE do pagamento das parcelas vincendas, sendo este considerado inadimplente. Para efetivar o cancelamento deste contrato, o CONTRATANTE deverá assinar o TERMO DE RESCISÃO na sede da CONTRATADA.
+        </div>
+        <div class="clause">
+          <strong>14ª.</strong> Para efetuar o cancelamento o CONTRATANTE deverá estar em dia com suas parcelas, pagar a parcela do mês da solicitação da rescisão e multa contratual correspondente a 10% do valor total do contrato, proporcional ao tempo restante, sem qualquer tipo de benefício, bônus ou desconto.
+        </div>
+        <div class="clause">
+          <strong>15ª.</strong> O CONTRATANTE será isento da multa contratual estipulada na cláusula 14ª, ao transferir seus direitos a pessoa idônea que efetuará a matrícula em turma nova, ficando o novo aluno/Contratante isento de taxa de inscrição.
+        </div>
+        <div class="clause">
+          <strong>16ª.</strong> O CONTRATANTE autoriza a CONTRATADA a divulgar o nome e a imagem do aluno/beneficiário deste contrato para fins publicitários e de propaganda sem nenhuma espécie de ônus para a CONTRATADA.
+        </div>
+        <div class="clause">
+          <strong>17ª.</strong> A CONTRATADA efetuará a entrega gratuita do CERTIFICADO de CONCLUSÃO em conformidade com a Lei nº 9394/96; Decreto nº 5.154/04; Deliberação CEE 14/97 em até 30 dias após o término do curso, ao aluno com presença mínima de 75% e desempenho final igual ou superior a “regular”, em sua avaliação final escrita.
+        </div>
+        <div class="clause">
+          <strong>18ª.</strong> O CONTRATANTE (pais/responsáveis) durante o Curso BOMBEIRO MIRIM CIVIL deverá acompanhar pedagogicamente o aluno/beneficiário, bem como suas responsabilidades (direito e deveres do aluno, uso de material e uniforme, frequência, notas, medidas disciplinares, etc), constantes no REGIMENTO INTERNO.
+        </div>
+        <div class="clause">
+          <strong>19ª.</strong> O CONTRATANTE declara que tomou conhecimento das instruções básicas sobre o Curso BOMBEIRO MIRIM CIVIL e sobre a preparação dos alunos de acordo com a escolaridade dos mesmos e a CONTRATADA indicará as atividades extras de acordo com o perfil de cada aluno.
+        </div>
+        <div class="clause">
+          <strong>20ª.</strong> O CONTRATANTE declara estar ciente que a CONTRATADA, como qualquer outra escola de cursos livres, não possui nenhum vínculo com o Corpo de Bombeiros, Polícia Militar, Prefeitura ou qualquer outro órgão público municipal, estadual ou federal.
+        </div>
+      </div>
+
+      <div class="dateplace">
+        <p>___________________/SP, _______ de ________________ de _______. </p>
+      </div>
+
+      <div class="sign">
+        <div class="line">CHARLIE SIERRA CURSOS E TREINAMENTOS LTDA — CNPJ: 49.749.571/0001-12</div>
+        <div class="line">CONTRATANTE — Li e estou ciente</div>
+      </div>
+
+      <p class="footer-note" style="margin-top: var(--space-md)">Endereço do Polo Educacional: Av. Eduardo Andréa Matarazzo, 891 - Vila Albertina, Ribeirão Preto/SP.</p>
+    </section>
+  </div>
+</body>
+</html>
