@@ -440,7 +440,7 @@
       color: #0d2b17;
       font-weight: 800;
       box-shadow: var(--shadow-1);
-      display: none;
+      display: inline-flex;
     }
 
     .muted { opacity: 0.85; }
@@ -546,7 +546,6 @@
       .stat-bar { grid-template-columns: repeat(2, 1fr); }
       .footer-grid { grid-template-columns: 1fr; }
       .form-row { grid-template-columns: 1fr; }
-      .whats-fab { display: inline-flex; }
       body::after {
         position: absolute;
         background-size: 320px;
@@ -1208,7 +1207,7 @@
   <a class="whats-fab" data-whatsapp data-message="Olá! Quero informações e vagas para o Bombeiro Mirim (idade do meu filho: __)." href="#">WhatsApp</a>
 
   <script>
-    const WHATSAPP_NUMBER = "5500000000000"; // TODO: substitua pelo número oficial com DDI/DDD
+    const WHATSAPP_NUMBER = "5511963998061";
     const DEFAULT_MESSAGE = "Olá! Quero informações e vagas para o Bombeiro Mirim (idade do meu filho: __).";
     const headerEl = document.querySelector("header");
     const menuToggle = document.getElementById("menuToggle");
@@ -1272,6 +1271,11 @@
       document.querySelectorAll("[data-whatsapp]").forEach((link) => {
         const msg = link.getAttribute("data-message") || DEFAULT_MESSAGE;
         link.setAttribute("href", buildWhatsAppUrl(msg));
+        link.setAttribute("target", "_blank");
+        link.setAttribute("rel", "noopener");
+      });
+      document.querySelectorAll("[data-whatsapp-dynamic]").forEach((link) => {
+        link.setAttribute("href", buildWhatsAppUrl(DEFAULT_MESSAGE));
         link.setAttribute("target", "_blank");
         link.setAttribute("rel", "noopener");
       });
@@ -1350,7 +1354,7 @@
       headerResizeObserver.observe(headerEl);
     }
 
-    document.querySelectorAll("[data-whatsapp]").forEach((link) => {
+    document.querySelectorAll("[data-whatsapp], [data-whatsapp-dynamic]").forEach((link) => {
       link.addEventListener("click", () => {
         if (window.fbq) {
           window.fbq("track", "Contact");
