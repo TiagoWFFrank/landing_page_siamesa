@@ -1,9 +1,11 @@
 {
   "name": "landing_page_siamesa",
-  "version": "1.0.0",
   "private": true,
-  "description": "Static landing page served locally on port 3002",
   "scripts": {
-    "start": "node server.js"
+    "dev": "wrangler pages dev public",
+    "deploy": "wrangler pages deploy public"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
   }
 }

@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cadastro | SIAMESA</title>
+  <meta
+    name="description"
+    content="Cadastre-se no projeto Bombeiro Mirim da Siamesa. Preencha o formulário e fale direto com nossa equipe pelo WhatsApp."
+  />
+  <meta property="og:title" content="Cadastro | Projeto Bombeiro Mirim | Siamesa" />
+  <meta
+    property="og:description"
+    content="Garanta a vaga do seu filho no projeto Bombeiro Mirim. Cadastre-se e fale direto com a equipe da Siamesa."
+  />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="pt_BR" />
+  <link rel="icon" type="image/x-icon" href="../assets/images/favicon_siamesa.ico" />
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon-16x16.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/images/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --brand-blue: #21293c;
+      --brand-blue-deep: #151a28;
+      --brand-gold: #c59f70;
+      --brand-gold-soft: #ead4ba;
+      --brand-red: #b23a3f;
+      --brand-orange: #dd6a24;
+      --brand-orange-dark: #b74d12;
+      --brand-cream: #efe4d6;
+      --brand-white: #ffffff;
+      --ink-dark: #121621;
+      --ink-muted: #5d6677;
+      --surface: rgba(255, 255, 255, 0.08);
+      --surface-strong: rgba(255, 255, 255, 0.92);
+      --surface-soft: rgba(239, 228, 214, 0.08);
+      --border-light: rgba(255, 255, 255, 0.16);
+      --border-dark: rgba(18, 22, 33, 0.12);
+      --shadow-soft: 0 18px 50px rgba(6, 10, 18, 0.25);
+      --shadow-strong: 0 24px 70px rgba(6, 10, 18, 0.35);
+      --radius-sm: 14px;
+      --radius-md: 22px;
+      --radius-lg: 34px;
+      --font-title: "Barlow Condensed", "Trebuchet MS", sans-serif;
+      --font-body: "Source Sans 3", "Trebuchet MS", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100%;
+      font-family: var(--font-body);
+      color: var(--brand-cream);
+      background:
+        radial-gradient(980px 560px at 0% 0%, rgba(197, 159, 112, 0.2), transparent 60%),
+        radial-gradient(860px 460px at 100% 0%, rgba(178, 58, 63, 0.22), transparent 58%),
+        linear-gradient(180deg, #26324a 0%, var(--brand-blue) 38%, var(--brand-blue-deep) 100%);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: auto;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::before {
+      width: 420px;
+      height: 420px;
+      top: -110px;
+      right: -120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(221, 106, 36, 0.26) 0%, rgba(221, 106, 36, 0) 68%);
+      filter: blur(6px);
+    }
+
+    body::after {
+      width: 520px;
+      height: 520px;
+      left: -200px;
+      bottom: -180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(197, 159, 112, 0.16) 0%, rgba(197, 159, 112, 0) 70%);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    .page-shell {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      padding: 18px 0;
+    }
+
+    .topbar-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 14px 18px;
+      border-radius: 999px;
+      background: rgba(17, 22, 33, 0.42);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: var(--shadow-soft);
+      backdrop-filter: blur(12px);
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .brand img {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      padding: 5px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .brand-copy {
+      min-width: 0;
+    }
+
+    .brand-copy strong,
+    .brand-copy span {
+      display: block;
+      line-height: 1;
+    }
+
+    .brand-copy strong {
+      font-family: var(--font-title);
+      font-size: 1.55rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .brand-copy span {
+      font-size: 0.92rem;
+      color: rgba(239, 228, 214, 0.8);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .pill-link,
+    .contact-link,
+    .submit-btn,
+    .child-action,
+    .remove-child {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 48px;
+      padding: 0 20px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .pill-link {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.14);
+      color: var(--brand-white);
+      font-weight: 700;
+    }
+
+    .contact-link {
+      background: linear-gradient(180deg, var(--brand-gold), #9f7a54);
+      color: #261707;
+      font-weight: 800;
+      box-shadow: 0 12px 28px rgba(197, 159, 112, 0.18);
+    }
+
+    .page-main {
+      padding: 14px 0 48px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+      gap: 28px;
+      align-items: start;
+    }
+
+    .intro-panel,
+    .form-shell {
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-strong);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intro-panel {
+      padding: 36px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04)),
+        linear-gradient(180deg, rgba(17, 22, 33, 0.1), rgba(17, 22, 33, 0.45));
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      min-height: 100%;
+    }
+
+    .intro-panel::after {
+      content: "";
+      position: absolute;
+      inset: auto -100px -100px auto;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(221, 106, 36, 0.18), rgba(221, 106, 36, 0));
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: rgba(197, 159, 112, 0.12);
+      border: 1px solid rgba(197, 159, 112, 0.28);
+      color: var(--brand-gold-soft);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.8rem;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--brand-orange);
+      box-shadow: 0 0 0 6px rgba(221, 106, 36, 0.14);
+    }
+
+    h1,
+    h2,
+    h3 {
+      margin: 0;
+      font-family: var(--font-title);
+      letter-spacing: 0.02em;
+      line-height: 1;
+    }
+
+    h1 {
+      margin-top: 22px;
+      font-size: clamp(3rem, 8vw, 5.4rem);
+      line-height: 0.94;
+      text-transform: uppercase;
+    }
+
+    .intro-lead {
+      margin: 18px 0 0;
+      max-width: 46ch;
+      font-size: 1.07rem;
+      color: rgba(239, 228, 214, 0.9);
+    }
+
+    .highlight {
+      color: var(--brand-gold-soft);
+    }
+
+    .intro-badges,
+    .check-grid,
+    .meta-list {
+      display: grid;
+      gap: 14px;
+      margin: 28px 0 0;
+    }
+
+    .intro-badges {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .stat-card,
+    .info-card,
+    .meta-item {
+      border-radius: var(--radius-md);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .stat-card {
+      padding: 18px;
+      min-height: 132px;
+    }
+
+    .stat-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-family: var(--font-title);
+      font-size: 1.8rem;
+      color: var(--brand-gold-soft);
+    }
+
+    .check-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .info-card {
+      padding: 18px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .info-card h2 {
+      font-size: 1.6rem;
+    }
+
+    .info-card p,
+    .meta-item p,
+    .stat-card p {
+      margin: 0;
+      color: rgba(239, 228, 214, 0.84);
+    }
+
+    .meta-list {
+      margin-top: 18px;
+    }
+
+    .meta-item {
+      padding: 16px 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .meta-number {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      flex: 0 0 auto;
+      display: grid;
+      place-items: center;
+      background: rgba(197, 159, 112, 0.14);
+      color: var(--brand-gold-soft);
+      font-weight: 800;
+    }
+
+    .form-shell {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(246, 240, 232, 0.98));
+      color: var(--ink-dark);
+      border: 1px solid rgba(255, 255, 255, 0.38);
+    }
+
+    .form-shell::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 8px;
+      background: linear-gradient(90deg, var(--brand-orange), var(--brand-gold), var(--brand-red));
+    }
+
+    .form-shell > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .form-header {
+      padding: 34px 32px 18px;
+      text-align: center;
+    }
+
+    .form-title {
+      font-size: clamp(2.3rem, 4vw, 3rem);
+      line-height: 0.98;
+      text-transform: uppercase;
+      color: var(--brand-blue);
+    }
+
+    .form-title span {
+      color: var(--brand-orange);
+    }
+
+    .form-header p {
+      margin: 14px auto 0;
+      max-width: 42ch;
+      color: var(--ink-muted);
+      font-size: 1.02rem;
+    }
+
+    .form-content {
+      padding: 0 32px 30px;
+    }
+
+    .enrollment-form {
+      display: grid;
+      gap: 22px;
+    }
+
+    .field-section {
+      display: grid;
+      gap: 14px;
+    }
+
+    .child-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .child-card {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(33, 41, 60, 0.1);
+      background: rgba(239, 228, 214, 0.36);
+      display: grid;
+      gap: 12px;
+    }
+
+    .child-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .child-card-head strong {
+      font-family: var(--font-title);
+      font-size: 1.35rem;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      color: var(--brand-blue);
+    }
+
+    .remove-child {
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(178, 58, 63, 0.22);
+      background: rgba(178, 58, 63, 0.08);
+      color: var(--brand-red);
+      font-weight: 700;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.55fr) minmax(0, 0.85fr);
+      gap: 12px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field label,
+    .field legend {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--brand-blue);
+    }
+
+    .field small {
+      color: var(--brand-red);
+      font-weight: 700;
+    }
+
+    .field-note {
+      margin: -2px 0 0;
+      font-size: 0.9rem;
+      color: var(--ink-muted);
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      min-height: 52px;
+      padding: 0 15px;
+      border-radius: 14px;
+      border: 1px solid rgba(33, 41, 60, 0.14);
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--ink-dark);
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+    }
+
+    .field input::placeholder {
+      color: #8b93a2;
+    }
+
+    .field input[readonly] {
+      background: rgba(231, 236, 246, 0.72);
+      color: rgba(33, 41, 60, 0.82);
+      cursor: default;
+    }
+
+    .field select {
+      background-image:
+        linear-gradient(45deg, transparent 50%, var(--brand-blue) 50%),
+        linear-gradient(135deg, var(--brand-blue) 50%, transparent 50%);
+      background-position:
+        calc(100% - 21px) calc(50% - 3px),
+        calc(100% - 15px) calc(50% - 3px);
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+      padding-right: 42px;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: rgba(221, 106, 36, 0.56);
+      box-shadow: 0 0 0 4px rgba(221, 106, 36, 0.14);
+    }
+
+    .field input:invalid:focus,
+    .field select:invalid:focus {
+      box-shadow: 0 0 0 4px rgba(178, 58, 63, 0.12);
+    }
+
+    .child-action {
+      width: fit-content;
+      min-height: 44px;
+      padding: 0 18px;
+      background: transparent;
+      border-color: rgba(33, 41, 60, 0.18);
+      color: var(--brand-blue);
+      font-weight: 800;
+    }
+
+    .child-action:hover,
+    .remove-child:hover,
+    .pill-link:hover,
+    .contact-link:hover,
+    .submit-btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .submit-btn {
+      width: 100%;
+      border-radius: 18px;
+      min-height: 56px;
+      padding: 0 18px;
+      background: linear-gradient(180deg, var(--brand-orange), var(--brand-orange-dark));
+      color: var(--brand-white);
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      box-shadow: 0 16px 30px rgba(221, 106, 36, 0.22);
+    }
+
+    .privacy-copy {
+      margin: -6px 0 0;
+      text-align: center;
+      font-size: 0.88rem;
+      color: var(--ink-muted);
+    }
+
+    .privacy-copy strong {
+      color: var(--brand-blue);
+    }
+
+    .feedback {
+      display: none;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(197, 159, 112, 0.36);
+      background: rgba(197, 159, 112, 0.12);
+      color: var(--brand-blue);
+    }
+
+    .feedback.is-visible {
+      display: grid;
+      gap: 10px;
+    }
+
+    .feedback.is-error {
+      border-color: rgba(178, 58, 63, 0.28);
+      background: rgba(178, 58, 63, 0.08);
+      color: #7c2430;
+    }
+
+    .feedback-status {
+      font-weight: 700;
+    }
+
+    .feedback a {
+      justify-self: start;
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 999px;
+      background: var(--brand-blue);
+      color: var(--brand-white);
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .feedback a[hidden] {
+      display: none;
+    }
+
+    .turnstile-shell {
+      display: grid;
+      gap: 10px;
+    }
+
+    .turnstile-shell[hidden] {
+      display: none;
+    }
+
+    .helper-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .helper-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      color: rgba(239, 228, 214, 0.88);
+      font-weight: 700;
+      font-size: 0.92rem;
+    }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(24px);
+      animation: fadeUp 0.7s ease forwards;
+    }
+
+    .fade-up-delay-1 {
+      animation-delay: 0.08s;
+    }
+
+    .fade-up-delay-2 {
+      animation-delay: 0.16s;
+    }
+
+    .fade-up-delay-3 {
+      animation-delay: 0.24s;
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 1040px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .intro-panel,
+      .form-shell {
+        max-width: 820px;
+        width: 100%;
+        margin: 0 auto;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .topbar-inner {
+        border-radius: 28px;
+        padding: 16px;
+      }
+
+      .nav-actions {
+        width: 100%;
+        justify-content: stretch;
+      }
+
+      .nav-actions a {
+        flex: 1 1 220px;
+      }
+
+      .intro-panel,
+      .form-header,
+      .form-content {
+        padding-left: 22px;
+        padding-right: 22px;
+      }
+
+      .intro-badges,
+      .check-grid,
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .child-card-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .remove-child {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .container {
+        width: min(100% - 20px, 1180px);
+      }
+
+      .topbar {
+        padding-top: 12px;
+      }
+
+      .brand {
+        width: 100%;
+      }
+
+      .topbar-inner {
+        border-radius: 24px;
+      }
+
+      .pill-link,
+      .contact-link,
+      .submit-btn,
+      .child-action {
+        width: 100%;
+      }
+
+      .helper-bar {
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="container">
+        <div class="topbar-inner fade-up">
+          <a class="brand" href="../" aria-label="Voltar para a página principal da Siamesa">
+            <img src="../assets/images/siamesa_sem_fundo.png" alt="Logo Siamesa" />
+            <div class="brand-copy">
+              <strong>Siamesa</strong>
+              <span>Projeto Bombeiro Mirim</span>
+            </div>
+          </a>
+          <nav class="nav-actions" aria-label="Ações principais">
+            <a class="pill-link" href="../">Voltar para o site</a>
+            <a class="contact-link" data-whatsapp-static href="#">Falar com a equipe</a>
+          </nav>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-main">
+      <div class="container hero-grid">
+        <section class="intro-panel fade-up fade-up-delay-1" aria-labelledby="cadastro-heading">
+          <span class="eyebrow">Cadastro imediato</span>
+          <h1 id="cadastro-heading">
+            Garanta a vaga
+            <span class="highlight">do seu filho</span>
+          </h1>
+          <p class="intro-lead">
+            Preencha o cadastro e a equipe da Siamesa já recebe as informações essenciais para
+            continuar o atendimento pelo WhatsApp com mais velocidade.
+          </p>
+
+          <div class="helper-bar" aria-label="Destaques do processo">
+            <span class="helper-chip">Atendimento humano</span>
+            <span class="helper-chip">Cadastro em menos de 2 minutos</span>
+            <span class="helper-chip">LGPD respeitada</span>
+          </div>
+
+          <div class="intro-badges">
+            <article class="stat-card">
+              <strong>1 cadastro</strong>
+              <p>Você pode incluir mais de um filho no mesmo envio.</p>
+            </article>
+            <article class="stat-card">
+              <strong>Salvou, abriu</strong>
+              <p>Primeiro o lead é salvo com segurança. Depois o WhatsApp abre com a mensagem pronta.</p>
+            </article>
+          </div>
+
+          <div class="check-grid">
+            <article class="info-card">
+              <h2>O que informar</h2>
+              <p>Nome e idade da criança, nome do responsável e o melhor WhatsApp da família.</p>
+            </article>
+            <article class="info-card">
+              <h2>Próximo passo</h2>
+              <p>Depois da confirmação do cadastro, a conversa continua no WhatsApp com vagas, horários e matrícula.</p>
+            </article>
+          </div>
+
+          <div class="meta-list" aria-label="Como funciona">
+            <article class="meta-item">
+              <span class="meta-number">1</span>
+              <p>Adicione um ou mais filhos no formulário.</p>
+            </article>
+            <article class="meta-item">
+              <span class="meta-number">2</span>
+              <p>Esta landing atende a unidade de São Bernardo do Campo/SP.</p>
+            </article>
+            <article class="meta-item">
+              <span class="meta-number">3</span>
+              <p>Salve o cadastro e continue o atendimento no WhatsApp da equipe.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="form-shell fade-up fade-up-delay-2" aria-labelledby="form-title">
+          <div class="form-header">
+            <h2 class="form-title" id="form-title">
+              Cadastre-se agora
+              <span>no Projeto Bombeiro Mirim</span>
+            </h2>
+            <p>Preencha abaixo e fale direto com nossa equipe pelo WhatsApp.</p>
+          </div>
+
+          <div class="form-content">
+            <form class="enrollment-form" id="enrollmentForm" novalidate>
+              <fieldset class="field-section">
+                <div class="child-list" id="childList"></div>
+                <button class="child-action" id="addChildButton" type="button">+ Adicionar mais um filho(a)</button>
+              </fieldset>
+
+              <fieldset class="field-section">
+                <div class="field">
+                  <label for="unit">Unidade desta landing</label>
+                  <input id="unit" name="unit" type="text" value="São Bernardo do Campo/SP" readonly required />
+                  <p class="field-note">Esta captação está travada para São Bernardo do Campo/SP.</p>
+                </div>
+              </fieldset>
+
+              <fieldset class="field-section">
+                <div class="field">
+                  <label for="responsible">Seu nome <small>*Responsável</small></label>
+                  <input id="responsible" name="responsibleName" type="text" autocomplete="name" placeholder="Ex: Maria da Silva" required />
+                  <p class="field-note">Digite seu nome completo como responsável pelo filho.</p>
+                </div>
+
+                <div class="field">
+                  <label for="whatsapp">Seu melhor WhatsApp</label>
+                  <input
+                    id="whatsapp"
+                    name="whatsapp"
+                    type="tel"
+                    inputmode="tel"
+                    autocomplete="tel"
+                    placeholder="Ex: (11) 91234-5678"
+                    required
+                  />
+                  <p class="field-note">Informe um número válido para contato rápido.</p>
+                </div>
+              </fieldset>
+
+              <div class="turnstile-shell" id="turnstileShell" hidden>
+                <div id="turnstileWidget"></div>
+                <p class="field-note" id="turnstileNote">Carregando verificação de segurança...</p>
+              </div>
+
+              <button class="submit-btn" id="submitButton" type="submit">Quero garantir a vaga</button>
+
+              <div class="feedback" id="feedbackBox" aria-live="polite">
+                <span class="feedback-status" id="feedbackStatus">Se o WhatsApp não abrir automaticamente, use o botão abaixo.</span>
+                <a id="feedbackLink" href="#" target="_blank" rel="noopener" hidden>Abrir WhatsApp agora</a>
+              </div>
+
+              <p class="privacy-copy">
+                <strong>Coletamos apenas os dados necessários</strong> para contato, atendimento comercial,
+                matrícula e gestão operacional. O armazenamento é interno e seguro, e você pode solicitar exclusão
+                a qualquer momento.
+              </p>
+            </form>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <template id="childTemplate">
+    <article class="child-card">
+      <div class="child-card-head">
+        <strong class="child-title">Filho(a) 1</strong>
+        <button class="remove-child" type="button" hidden>Remover</button>
+      </div>
+      <div class="field-grid">
+        <div class="field">
+          <label>Nome do filho(a)</label>
+          <input type="text" data-child-name autocomplete="off" placeholder="Ex: João Pedro" required />
+        </div>
+        <div class="field">
+          <label>Idade</label>
+          <select data-child-age required>
+            <option value="">Idade</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+          </select>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
+  <script src="../assets/js/cadastro.js" defer></script>
+</body>
+</html>
