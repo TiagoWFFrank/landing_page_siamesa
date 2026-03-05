@@ -81,7 +81,7 @@ export async function onRequest(context) {
       lead,
       leadId: crypto.randomUUID(),
       createdAt: new Date(),
-      contactNumber: env.WHATSAPP_NUMBER
+      contactNumber: env.SIAMESA_WHATSAPP_NUMBER
     });
 
     await appendLeadViaAppsScript(env, leadRecord);

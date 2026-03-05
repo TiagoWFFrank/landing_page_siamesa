@@ -10,7 +10,7 @@ export class AppsScriptWebhookError extends Error {
 }
 
 export async function appendLeadViaAppsScript(env, leadRecord) {
-  const webhookUrl = env.APPS_SCRIPT_WEBHOOK_URL;
+  const webhookUrl = env.SIAMESA_APPS_SCRIPT_WEBHOOK_URL;
   const webhookSecret = env.APPS_SCRIPT_SHARED_SECRET;
 
   if (!webhookUrl || !webhookSecret) {

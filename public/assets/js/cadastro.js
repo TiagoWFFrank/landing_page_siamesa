@@ -1,5 +1,5 @@
 (() => {
-  const WHATSAPP_NUMBER = "5511963998061";
+  const SIAMESA_WHATSAPP_NUMBER = "5511963998061";
   const STATIC_MESSAGE = "Olá! Quero informações sobre matrícula no Projeto Bombeiro Mirim.";
   const DEFAULT_UNIT = "São Bernardo do Campo/SP";
   const MAX_CHILDREN = 5;
@@ -32,7 +32,7 @@
   let turnstileEnabled = false;
 
   function buildWhatsAppUrl(message) {
-    return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    return `https://wa.me/${SIAMESA_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
   }
 
   function getStoredTracking() {

@@ -1,10 +1,10 @@
 const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
 export function hasAppsScriptConfig(env) {
-  return Boolean(env.APPS_SCRIPT_WEBHOOK_URL && env.APPS_SCRIPT_SHARED_SECRET);
+  return Boolean(env.SIAMESA_APPS_SCRIPT_WEBHOOK_URL && env.APPS_SCRIPT_SHARED_SECRET);
 }
 
 export function hasWhatsappConfig(env) {
-  return Boolean(env.WHATSAPP_NUMBER);
+  return Boolean(env.SIAMESA_WHATSAPP_NUMBER);
 }
 
 export function hasLeadPipelineConfig(env) {

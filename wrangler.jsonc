@@ -4,8 +4,8 @@
   "pages_build_output_dir": "./public",
   "compatibility_date": "2026-03-04",
   "vars": {
-    "APPS_SCRIPT_WEBHOOK_URL": "https://script.google.com/macros/s/AKfycbxA8ae-LjHekCN9IUU8Wf3WQaGB8YpK5Q1xtv-VfAoO8JpOY0-vCvfhhhmO_Yr5y5xusA/exec",
-    "WHATSAPP_NUMBER": "5511911940366"
+    "SIAMESA_APPS_SCRIPT_WEBHOOK_URL": "https://script.google.com/macros/s/AKfycbxA8ae-LjHekCN9IUU8Wf3WQaGB8YpK5Q1xtv-VfAoO8JpOY0-vCvfhhhmO_Yr5y5xusA/exec",
+    "SIAMESA_WHATSAPP_NUMBER": "5511911940366"
   },
   "dev": {
     "port": 3002

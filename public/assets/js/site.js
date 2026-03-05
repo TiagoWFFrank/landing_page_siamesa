@@ -1,5 +1,5 @@
 (() => {
-  const WHATSAPP_NUMBER = "5511963998061";
+  const SIAMESA_WHATSAPP_NUMBER = "5511963998061";
   const DEFAULT_MESSAGE = "Olá! Quero informações e vagas para o Bombeiro Mirim (idade do meu filho: __).";
   const TRACKING_STORAGE_KEY = "siamesa_tracking";
   const TRACKING_KEYS = [
@@ -127,7 +127,7 @@
 
   function buildWhatsAppUrl(message) {
     const msg = encodeURIComponent(message || DEFAULT_MESSAGE);
-    return `https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
+    return `https://wa.me/${SIAMESA_WHATSAPP_NUMBER}?text=${msg}`;
   }
 
   function applyWhatsAppLinks() {

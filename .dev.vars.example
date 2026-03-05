@@ -1,5 +1,5 @@
-APPS_SCRIPT_WEBHOOK_URL="https://script.google.com/macros/s/REPLACE_ME/exec"
+SIAMESA_APPS_SCRIPT_WEBHOOK_URL="https://script.google.com/macros/s/REPLACE_ME/exec"
 APPS_SCRIPT_SHARED_SECRET="replace_with_shared_secret"
-WHATSAPP_NUMBER="5511963998061"
+SIAMESA_WHATSAPP_NUMBER="5511963998061"
 TURNSTILE_SITE_KEY="your_turnstile_site_key"
 TURNSTILE_SECRET_KEY="your_turnstile_secret_key"
