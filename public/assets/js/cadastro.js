@@ -1,7 +1,7 @@
 (() => {
-  const SIAMESA_WHATSAPP_NUMBER = "5511911940366";
-  const STATIC_MESSAGE = "Olá! Quero informações sobre matrícula no Projeto Bombeiro Mirim.";
-  const DEFAULT_UNIT = "São Bernardo do Campo/SP";
+  const FALLBACK_WHATSAPP_NUMBER = "5511911940366";
+  const STATIC_MESSAGE = "Ola! Quero informacoes sobre matricula no Projeto Bombeiro Mirim.";
+  const DEFAULT_UNIT = "Sao Bernardo do Campo/SP";
   const MAX_CHILDREN = 5;
   const TRACKING_STORAGE_KEY = "siamesa_tracking";
   const TRACKING_KEYS = [
@@ -11,7 +11,9 @@
     "utm_content",
     "utm_term",
     "fbclid",
-    "gclid"
+    "gclid",
+    "fbp",
+    "fbc"
   ];
 
   const childList = document.getElementById("childList");
@@ -30,9 +32,11 @@
   let turnstileWidgetId = null;
   let turnstileToken = "";
   let turnstileEnabled = false;
+  let runtimeConfigPromise = null;
+  let whatsappNumber = FALLBACK_WHATSAPP_NUMBER;
 
   function buildWhatsAppUrl(message) {
-    return `https://wa.me/${SIAMESA_WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+    return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
   }
 
   function getStoredTracking() {
@@ -56,6 +60,10 @@
     return tracking;
   }
 
+  function getMetaTrackingData() {
+    return window.SiamesaMeta?.getMetaBrowserIdentifiers?.() || {};
+  }
+
   function persistTracking(tracking) {
     try {
       window.sessionStorage.setItem(TRACKING_STORAGE_KEY, JSON.stringify(tracking));
@@ -67,7 +75,8 @@
   function syncTracking() {
     const mergedTracking = {
       ...getStoredTracking(),
-      ...getTrackingFromUrl()
+      ...getTrackingFromUrl(),
+      ...getMetaTrackingData()
     };
 
     persistTracking(mergedTracking);
@@ -165,7 +174,7 @@
       const ageNumber = Number.parseInt(child.age, 10);
 
       if (!child.name) {
-        nameInput.setCustomValidity("Informe o nome da criança.");
+        nameInput.setCustomValidity("Informe o nome da crianca.");
         firstInvalidField = firstInvalidField || nameInput;
       }
 
@@ -173,7 +182,7 @@
         ageSelect.setCustomValidity("Selecione a idade.");
         firstInvalidField = firstInvalidField || ageSelect;
       } else if (!Number.isInteger(ageNumber) || ageNumber < 5 || ageNumber > 13) {
-        ageSelect.setCustomValidity("As idades permitidas são de 5 a 13 anos.");
+        ageSelect.setCustomValidity("As idades permitidas sao de 5 a 13 anos.");
         firstInvalidField = firstInvalidField || ageSelect;
       }
     });
@@ -205,7 +214,9 @@
     submitButton.textContent = isSubmitting ? "Salvando..." : "Quero garantir a vaga";
   }
 
-  function buildPayload(children, tracking) {
+  function buildPayload(children, tracking, metaTracking, eventId) {
+    const eventSourceUrl = metaTracking.event_source_url || window.location.href.split("#")[0] || "";
+
     return {
       source: "lp_siamesa_cadastro",
       page_path: window.location.pathname,
@@ -219,27 +230,35 @@
       utm_campaign: tracking.utm_campaign || "",
       utm_content: tracking.utm_content || "",
       utm_term: tracking.utm_term || "",
-      fbclid: tracking.fbclid || "",
+      fbclid: tracking.fbclid || metaTracking.fbclid || "",
       gclid: tracking.gclid || "",
+      fbp: metaTracking.fbp || tracking.fbp || "",
+      fbc: metaTracking.fbc || tracking.fbc || "",
+      event_id: eventId,
+      event_source_url: eventSourceUrl,
       referrer: document.referrer || "",
       user_agent: navigator.userAgent || "",
       turnstile_token: turnstileToken
     };
   }
 
-  async function loadHealthConfig() {
-    try {
-      const response = await fetch("/api/health", {
-        headers: {
-          accept: "application/json"
-        }
-      });
+  async function loadPublicRuntimeConfig() {
+    if (runtimeConfigPromise) return runtimeConfigPromise;
 
-      if (!response.ok) return null;
-      return response.json();
-    } catch {
-      return null;
+    if (window.SiamesaMeta?.loadPublicRuntimeConfig) {
+      runtimeConfigPromise = window.SiamesaMeta.loadPublicRuntimeConfig();
+      return runtimeConfigPromise;
     }
+
+    runtimeConfigPromise = fetch("/api/health", {
+      headers: {
+        accept: "application/json"
+      }
+    })
+      .then((response) => (response.ok ? response.json() : {}))
+      .catch(() => ({}));
+
+    return runtimeConfigPromise;
   }
 
   async function waitForTurnstile() {
@@ -258,13 +277,13 @@
 
     if (turnstileEnabled && window.turnstile && turnstileWidgetId !== null) {
       window.turnstile.reset(turnstileWidgetId);
-      turnstileNote.textContent = "Confirme a verificação de segurança antes de enviar.";
+      turnstileNote.textContent = "Confirme a verificacao de seguranca antes de enviar.";
     }
   }
 
   async function initTurnstile() {
-    const health = await loadHealthConfig();
-    const siteKey = health?.turnstile_site_key || "";
+    const runtimeConfig = await loadPublicRuntimeConfig();
+    const siteKey = runtimeConfig?.turnstile_site_key || "";
 
     if (!siteKey) {
       turnstileShell.hidden = true;
@@ -275,11 +294,11 @@
 
     turnstileShell.hidden = false;
     turnstileEnabled = true;
-    turnstileNote.textContent = "Carregando verificação de segurança...";
+    turnstileNote.textContent = "Carregando verificacao de seguranca...";
 
     const loaded = await waitForTurnstile();
     if (!loaded) {
-      turnstileNote.textContent = "Não foi possível carregar a verificação de segurança. Tente recarregar a página.";
+      turnstileNote.textContent = "Nao foi possivel carregar a verificacao de seguranca. Tente recarregar a pagina.";
       return;
     }
 
@@ -287,19 +306,38 @@
       sitekey: siteKey,
       callback(token) {
         turnstileToken = token;
-        turnstileNote.textContent = "Verificação concluída.";
+        turnstileNote.textContent = "Verificacao concluida.";
       },
       "expired-callback"() {
         turnstileToken = "";
-        turnstileNote.textContent = "A verificação expirou. Confirme novamente para enviar.";
+        turnstileNote.textContent = "A verificacao expirou. Confirme novamente para enviar.";
       },
       "error-callback"() {
         turnstileToken = "";
-        turnstileNote.textContent = "Não foi possível validar a segurança agora. Tente novamente.";
+        turnstileNote.textContent = "Nao foi possivel validar a seguranca agora. Tente novamente.";
       }
     });
 
-    turnstileNote.textContent = "Confirme a verificação de segurança antes de enviar.";
+    turnstileNote.textContent = "Confirme a verificacao de seguranca antes de enviar.";
+  }
+
+  async function initMetaTracking() {
+    const runtimeConfig = await loadPublicRuntimeConfig();
+    if (runtimeConfig?.whatsapp_number_public) {
+      whatsappNumber = runtimeConfig.whatsapp_number_public;
+      applyStaticWhatsAppLink();
+    }
+
+    syncTracking();
+
+    if (window.SiamesaMeta?.initMetaPixel) {
+      window.SiamesaMeta.initMetaPixel(runtimeConfig);
+      window.SiamesaMeta.trackMetaPageView();
+      window.SiamesaMeta.trackMetaViewContent({
+        content_name: "cadastro_siamesa",
+        content_category: "lead"
+      });
+    }
   }
 
   async function handleSubmit(event) {
@@ -327,7 +365,10 @@
 
     if (!enrollmentForm.reportValidity()) return;
 
-    const payload = buildPayload(children, syncTracking());
+    const tracking = syncTracking();
+    const metaTracking = getMetaTrackingData();
+    const eventId = window.SiamesaMeta?.getOrCreateLeadEventId?.() || `lead_${Date.now()}_${Math.random().toString(16).slice(2, 10)}`;
+    const payload = buildPayload(children, tracking, metaTracking, eventId);
     setSubmitting(true);
 
     try {
@@ -344,19 +385,27 @@
         throw new Error(result.message || "Nao foi possivel concluir o cadastro agora.");
       }
 
+      window.SiamesaMeta?.trackMetaLead?.(
+        {
+          content_name: "cadastro_siamesa",
+          content_category: "lead",
+          status: "completed",
+          unit: payload.unit,
+          children_count: children.length
+        },
+        eventId
+      );
+
       showFeedback("Cadastro salvo com sucesso. Redirecionando para o WhatsApp...", {
         url: result.whatsapp_url
       });
 
-      if (window.fbq) {
-        window.fbq("track", "Lead");
-      }
-
       window.setTimeout(() => {
         window.location.href = result.whatsapp_url;
       }, 150);
-    } catch {
-      showFeedback("Nao foi possivel salvar seu cadastro agora. Voce pode falar com a equipe no WhatsApp, mas este cadastro nao foi gravado.", {
+    } catch (error) {
+      const message = error?.message || "Nao foi possivel salvar seu cadastro agora.";
+      showFeedback(`${message} Voce pode falar com a equipe no WhatsApp, mas este cadastro nao foi gravado.`, {
         isError: true,
         url: buildWhatsAppUrl(STATIC_MESSAGE)
       });
@@ -364,6 +413,7 @@
       setSubmitting(false);
     }
   }
+
   addChildButton.addEventListener("click", addChildCard);
 
   childList.addEventListener("click", (event) => {
@@ -382,5 +432,6 @@
   syncTracking();
   applyStaticWhatsAppLink();
   resetChildren();
+  initMetaTracking();
   initTurnstile();
 })();

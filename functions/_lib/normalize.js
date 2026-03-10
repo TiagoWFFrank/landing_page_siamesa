@@ -127,6 +127,10 @@ export function buildLeadRows({ lead, leadId, createdAt, contactNumber }) {
     utm_term: lead.utm_term,
     fbclid: lead.fbclid,
     gclid: lead.gclid,
+    fbp: lead.fbp,
+    fbc: lead.fbc,
+    meta_event_id: lead.event_id,
+    event_source_url: lead.event_source_url,
     landing_context: lead.landing_context,
     source: lead.source,
     lead_status: lead.lead_status,
@@ -144,6 +148,7 @@ export function buildLeadRows({ lead, leadId, createdAt, contactNumber }) {
     lead_id: leadId,
     created_at_utc: timestamps.created_at_utc,
     created_at_brt: timestamps.created_at_brt,
+    event_id: lead.event_id,
     whatsapp_message: whatsappMessage,
     whatsapp_url: whatsappUrl,
     rows

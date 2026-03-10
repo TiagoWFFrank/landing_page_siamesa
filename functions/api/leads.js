@@ -1,5 +1,6 @@
 import { hasLeadPipelineConfig, verifyTurnstileToken } from "../_lib/auth.js";
 import { AppsScriptWebhookError, appendLeadViaAppsScript } from "../_lib/apps-script.js";
+import { sendMetaLeadEvent } from "../_lib/meta-conversions.js";
 import { buildLeadRows } from "../_lib/normalize.js";
 import { errorJson, json, methodNotAllowed } from "../_lib/response.js";
 import { ValidationError, validateLeadPayload } from "../_lib/validate-lead.js";
@@ -61,30 +62,49 @@ export async function onRequest(context) {
   }
 
   try {
+    const remoteIp = getRemoteIp(request);
+    const requestUserAgent = getRequestUserAgent(request);
     const lead = validateLeadPayload({
       ...payload,
       referrer: payload?.referrer || getRequestReferrer(request),
-      user_agent: payload?.user_agent || getRequestUserAgent(request)
+      user_agent: payload?.user_agent || requestUserAgent
     });
 
     const turnstileResult = await verifyTurnstileToken({
       env,
       token: lead.turnstile_token,
-      remoteIp: getRemoteIp(request)
+      remoteIp
     });
 
     if (!turnstileResult.success) {
       return errorJson(400, "TURNSTILE_ERROR", "Nao foi possivel validar a verificacao de seguranca.");
     }
 
+    const createdAt = new Date();
     const leadBatch = buildLeadRows({
       lead,
       leadId: crypto.randomUUID(),
-      createdAt: new Date(),
+      createdAt,
       contactNumber: env.SIAMESA_WHATSAPP_NUMBER
     });
 
     await appendLeadViaAppsScript(env, leadBatch.rows);
+
+    const metaResult = await sendMetaLeadEvent({
+      env,
+      lead,
+      leadBatch,
+      clientIpAddress: remoteIp,
+      clientUserAgent: requestUserAgent,
+      eventTime: createdAt
+    });
+
+    if (!metaResult.ok && !metaResult.skipped) {
+      console.error("meta_conversion_failed", {
+        code: metaResult.code,
+        status: metaResult.status || 0
+      });
+    }
 
     return json({
       ok: true,

@@ -5,7 +5,14 @@
   "compatibility_date": "2026-03-04",
   "vars": {
     "SIAMESA_APPS_SCRIPT_WEBHOOK_URL": "https://script.google.com/macros/s/AKfycbxA8ae-LjHekCN9IUU8Wf3WQaGB8YpK5Q1xtv-VfAoO8JpOY0-vCvfhhhmO_Yr5y5xusA/exec",
-    "SIAMESA_WHATSAPP_NUMBER": "5511911940366"
+    "SIAMESA_WHATSAPP_NUMBER": "5511911940366",
+    "META_PIXEL_ID": "1645380376472593",
+    "META_CONVERSIONS_API_ACCESS_TOKEN": "your_meta_conversions_api_access_token",
+    "META_TEST_EVENT_CODE": "",
+    "META_ENABLE_ADVANCED_MATCHING": "true",
+    "META_DATASET_ID": "",
+    "META_API_VERSION": "v22.0",
+    "SIAMESA_SITE_URL": "https://www.example.com"
   },
   "dev": {
     "port": 3002

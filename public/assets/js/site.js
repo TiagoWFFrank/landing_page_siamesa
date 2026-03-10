@@ -1,6 +1,6 @@
 (() => {
-  const SIAMESA_WHATSAPP_NUMBER = "5511963998061";
-  const DEFAULT_MESSAGE = "Olá! Quero informações e vagas para o Bombeiro Mirim (idade do meu filho: __).";
+  const FALLBACK_WHATSAPP_NUMBER = "5511911940366";
+  const DEFAULT_MESSAGE = "Ola! Quero informacoes e vagas para o Bombeiro Mirim (idade do meu filho: __).";
   const TRACKING_STORAGE_KEY = "siamesa_tracking";
   const TRACKING_KEYS = [
     "utm_source",
@@ -9,7 +9,9 @@
     "utm_content",
     "utm_term",
     "fbclid",
-    "gclid"
+    "gclid",
+    "fbp",
+    "fbc"
   ];
 
   const headerEl = document.querySelector("header");
@@ -17,6 +19,8 @@
   const menuClose = document.getElementById("menuClose");
   const mobileMenuBackdrop = document.getElementById("mobileMenuBackdrop");
   const mobileMenu = document.getElementById("mobileMenu");
+
+  let whatsappNumber = FALLBACK_WHATSAPP_NUMBER;
 
   function getStoredTracking() {
     try {
@@ -39,6 +43,10 @@
     return tracking;
   }
 
+  function getMetaTrackingData() {
+    return window.SiamesaMeta?.getMetaBrowserIdentifiers?.() || {};
+  }
+
   function persistTracking(tracking) {
     try {
       window.sessionStorage.setItem(TRACKING_STORAGE_KEY, JSON.stringify(tracking));
@@ -50,7 +58,8 @@
   function syncTracking() {
     const mergedTracking = {
       ...getStoredTracking(),
-      ...getTrackingFromUrl()
+      ...getTrackingFromUrl(),
+      ...getMetaTrackingData()
     };
 
     persistTracking(mergedTracking);
@@ -126,14 +135,14 @@
   }
 
   function buildWhatsAppUrl(message) {
-    const msg = encodeURIComponent(message || DEFAULT_MESSAGE);
-    return `https://wa.me/${SIAMESA_WHATSAPP_NUMBER}?text=${msg}`;
+    const encodedMessage = encodeURIComponent(message || DEFAULT_MESSAGE);
+    return `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
   }
 
   function applyWhatsAppLinks() {
     document.querySelectorAll("[data-whatsapp]").forEach((link) => {
-      const msg = link.getAttribute("data-message") || DEFAULT_MESSAGE;
-      link.setAttribute("href", buildWhatsAppUrl(msg));
+      const message = link.getAttribute("data-message") || DEFAULT_MESSAGE;
+      link.setAttribute("href", buildWhatsAppUrl(message));
       link.setAttribute("target", "_blank");
       link.setAttribute("rel", "noopener");
     });
@@ -146,12 +155,13 @@
   }
 
   function buildMessageFromForm(data) {
-    const base = `Olá! Quero informações e vagas para o Bombeiro Mirim (idade do meu filho: ${data.idade || "__"}).`;
-    const lines = [base];
+    const lines = [
+      `Ola! Quero informacoes e vagas para o Bombeiro Mirim (idade do meu filho: ${data.idade || "__"}).`
+    ];
 
-    if (data.nome) lines.push(`Responsável: ${data.nome}`);
+    if (data.nome) lines.push(`Responsavel: ${data.nome}`);
     if (data.bairro) lines.push(`Bairro/cidade: ${data.bairro}`);
-    if (data.periodo) lines.push(`Preferência de horário: ${data.periodo}`);
+    if (data.periodo) lines.push(`Preferencia de horario: ${data.periodo}`);
     if (data.interesse) lines.push(`Interesse: ${data.interesse}`);
     if (data.whatsapp) lines.push(`WhatsApp: ${data.whatsapp}`);
     if (data.mensagem) lines.push(`Mensagem: ${data.mensagem}`);
@@ -162,10 +172,10 @@
   function handleLeadForm(form) {
     form.addEventListener("submit", (event) => {
       event.preventDefault();
+
       const data = Object.fromEntries(new FormData(form).entries());
       const message = buildMessageFromForm(data);
       const url = buildWhatsAppUrl(message);
-
       document.querySelectorAll("[data-whatsapp-dynamic]").forEach((link) => {
         link.setAttribute("href", url);
         link.setAttribute("target", "_blank");
@@ -177,11 +187,7 @@
 
       const obrigado = document.getElementById("obrigadoTexto");
       if (obrigado && data.nome) {
-        obrigado.textContent = `Obrigado, ${data.nome}! Nossa equipe vai chamar você no WhatsApp em instantes.`;
-      }
-
-      if (window.fbq) {
-        window.fbq("track", "Lead");
+        obrigado.textContent = `Obrigado, ${data.nome}! Nossa equipe vai chamar voce no WhatsApp em instantes.`;
       }
 
       form.reset();
@@ -195,17 +201,55 @@
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
-      const data = Object.fromEntries(new FormData(form).entries());
-      const comentario = (data.comentarioExtra || "").toString().trim();
-      if (!comentario) return;
 
-      const nome = (data.nomeComentario || "").toString().trim();
-      const identificacao = nome ? ` (${nome})` : "";
-      const message = `Olá! Quero deixar um comentário sobre a Siamesa${identificacao}: ${comentario}`;
+      const data = Object.fromEntries(new FormData(form).entries());
+      const comment = (data.comentarioExtra || "").toString().trim();
+      if (!comment) return;
+
+      const name = (data.nomeComentario || "").toString().trim();
+      const identification = name ? ` (${name})` : "";
+      const message = `Ola! Quero deixar um comentario sobre a Siamesa${identification}: ${comment}`;
 
       window.open(buildWhatsAppUrl(message), "_blank", "noopener");
       form.reset();
     });
+  }
+
+  async function loadPublicRuntimeConfig() {
+    if (window.SiamesaMeta?.loadPublicRuntimeConfig) {
+      return window.SiamesaMeta.loadPublicRuntimeConfig();
+    }
+
+    try {
+      const response = await fetch("/api/health", {
+        headers: {
+          accept: "application/json"
+        }
+      });
+
+      return response.ok ? response.json() : {};
+    } catch {
+      return {};
+    }
+  }
+
+  async function initPublicTracking() {
+    const runtimeConfig = await loadPublicRuntimeConfig();
+    if (runtimeConfig?.whatsapp_number_public) {
+      whatsappNumber = runtimeConfig.whatsapp_number_public;
+      applyWhatsAppLinks();
+    }
+
+    applyCadastroLinks();
+
+    if (window.SiamesaMeta?.initMetaPixel) {
+      window.SiamesaMeta.initMetaPixel(runtimeConfig);
+      window.SiamesaMeta.trackMetaPageView();
+      window.SiamesaMeta.trackMetaViewContent({
+        content_name: "landing_siamesa",
+        content_category: "landing"
+      });
+    }
   }
 
   document.querySelectorAll("form[data-lead-form]").forEach(handleLeadForm);
@@ -214,9 +258,11 @@
   handleComentarioExtraForm();
   setupMobileMenu();
   syncHeaderOffset();
+  initPublicTracking();
 
   window.addEventListener("resize", syncHeaderOffset);
   window.addEventListener("orientationchange", syncHeaderOffset);
+
   if ("ResizeObserver" in window && headerEl) {
     const headerResizeObserver = new ResizeObserver(syncHeaderOffset);
     headerResizeObserver.observe(headerEl);
@@ -224,15 +270,15 @@
 
   document.querySelectorAll("[data-whatsapp], [data-whatsapp-dynamic]").forEach((link) => {
     link.addEventListener("click", () => {
-      if (window.fbq) {
-        window.fbq("track", "Contact");
+      if (typeof window.fbq === "function") {
+        try {
+          window.fbq("track", "Contact");
+        } catch {
+          /* noop */
+        }
       }
     });
   });
-
-  if (window.fbq) {
-    window.fbq("track", "ViewContent");
-  }
 
   const year = document.getElementById("year");
   if (year) year.textContent = new Date().getFullYear();

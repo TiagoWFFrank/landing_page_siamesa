@@ -30,6 +30,11 @@ function ensureRequiredText(value, message, options) {
   return sanitized;
 }
 
+function sanitizeEventSourceUrl(value) {
+  const sanitized = sanitizeOptionalText(value, { maxLength: 1000 });
+  return /^https?:\/\//i.test(sanitized) ? sanitized : "";
+}
+
 function normalizeChild(child, index) {
   if (!child || typeof child !== "object" || Array.isArray(child)) {
     throw new ValidationError(`Informe nome e idade validos para o filho ${index + 1}.`);
@@ -100,6 +105,10 @@ export function validateLeadPayload(payload) {
     utm_term: sanitizeOptionalText(payload.utm_term, { maxLength: 160 }),
     fbclid: sanitizeOptionalText(payload.fbclid, { maxLength: 255 }),
     gclid: sanitizeOptionalText(payload.gclid, { maxLength: 255 }),
+    fbp: sanitizeOptionalText(payload.fbp, { maxLength: 255 }),
+    fbc: sanitizeOptionalText(payload.fbc, { maxLength: 255 }),
+    event_id: sanitizeOptionalText(payload.event_id, { maxLength: 120 }),
+    event_source_url: sanitizeEventSourceUrl(payload.event_source_url),
     referrer: sanitizeOptionalText(payload.referrer, { maxLength: 500 }),
     user_agent: sanitizeOptionalText(payload.user_agent, { maxLength: 500 }),
     lead_status: sanitizeText(payload.lead_status || "novo", { maxLength: 50 }) || "novo",
