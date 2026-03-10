@@ -71,17 +71,6 @@ export function getMetaPixelId(env) {
   return hasMetaPixelConfig(env) ? normalizeEnvValue(env.META_PIXEL_ID) : "";
 }
 
-export function hasMetaConversionsAccessTokenConfig(env) {
-  return hasUsableValue(env.META_CONVERSIONS_API_ACCESS_TOKEN, {
-    exact: ["your_meta_conversions_api_access_token"],
-    startsWith: ["your_meta_"]
-  });
-}
-
-export function hasMetaConversionsConfig(env) {
-  return Boolean(hasMetaPixelConfig(env) && hasMetaConversionsAccessTokenConfig(env));
-}
-
 export function hasMetaTestEventCode(env) {
   return hasUsableValue(env.META_TEST_EVENT_CODE, {
     exact: ["your_meta_test_event_code"]

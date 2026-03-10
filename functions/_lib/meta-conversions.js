@@ -2,12 +2,12 @@ import {
   getMetaApiVersion,
   getMetaPixelId,
   getMetaTestEventCode,
-  getSiteUrl,
-  hasMetaConversionsConfig
+  getSiteUrl
 } from "./auth.js";
 import { normalizeBrazilWhatsappDigits } from "./normalize.js";
 
 const META_TIMEOUT_MS = 6000;
+const INTERNAL_META_CAPI_TOKEN = "EAAeqTn0zU7MBQZBvZBpEHnT7BMF2dMDLL1N4FctRBlKkaiFgv4HiPiyjo1ZBJY8huEx2enAkqcIwyfm9vUcDienZBJmmtlZCLCYZAFH7h78Eh2FMa0SA0GhtkTOZCMu5Skrd2kj6E8K6ms6t0EpNtRAdb7VFJwZBwHKuYh2kfBRWne4rk5dAA3AgLZBlN9myiJJasngZDZD";
 
 function stripUrlHash(value) {
   const rawValue = String(value || "").trim();
@@ -83,7 +83,10 @@ export async function sendMetaLeadEvent({
   clientUserAgent,
   eventTime = new Date()
 }) {
-  if (!hasMetaConversionsConfig(env)) {
+  const pixelId = getMetaPixelId(env);
+  const accessToken = String(INTERNAL_META_CAPI_TOKEN || "").trim();
+
+  if (!pixelId || !accessToken) {
     return {
       ok: false,
       skipped: true,
@@ -91,8 +94,6 @@ export async function sendMetaLeadEvent({
     };
   }
 
-  const pixelId = getMetaPixelId(env);
-  const accessToken = String(env.META_CONVERSIONS_API_ACCESS_TOKEN || "").trim();
   const eventId = lead.event_id || `lead_${leadBatch.lead_id}`;
   const apiVersion = getMetaApiVersion(env);
   const testEventCode = getMetaTestEventCode(env);
