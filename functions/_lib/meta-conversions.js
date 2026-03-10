@@ -75,6 +75,73 @@ function buildCustomData({ lead, leadBatch }) {
   };
 }
 
+function buildMetaResponseSummary(responseData) {
+  if (!responseData || typeof responseData !== "object" || Array.isArray(responseData)) {
+    return {
+      has_body: false
+    };
+  }
+
+  const summary = {
+    has_body: true
+  };
+
+  if (typeof responseData.events_received === "number") {
+    summary.events_received = responseData.events_received;
+  }
+
+  if (typeof responseData.fbtrace_id === "string") {
+    summary.fbtrace_id = responseData.fbtrace_id;
+  }
+
+  const error = responseData.error;
+  if (error && typeof error === "object" && !Array.isArray(error)) {
+    const errorSummary = {};
+
+    if (typeof error.message === "string") {
+      errorSummary.message = error.message;
+    }
+
+    if (typeof error.code !== "undefined") {
+      errorSummary.code = error.code;
+    }
+
+    if (typeof error.error_subcode !== "undefined") {
+      errorSummary.error_subcode = error.error_subcode;
+    }
+
+    if (Object.keys(errorSummary).length > 0) {
+      summary.error = errorSummary;
+    }
+
+    if (!summary.fbtrace_id && typeof error.fbtrace_id === "string") {
+      summary.fbtrace_id = error.fbtrace_id;
+    }
+  }
+
+  return summary;
+}
+
+function logMetaDiagnostic({
+  status,
+  pixelId,
+  eventId,
+  testEventCodeSent,
+  eventSourceUrlSent,
+  responseSummary,
+  outcome
+}) {
+  console.log("meta_capi_diagnostic", {
+    status,
+    pixel_id: pixelId,
+    event_id: eventId,
+    test_event_code_sent: testEventCodeSent,
+    event_source_url_sent: eventSourceUrlSent,
+    response: responseSummary,
+    outcome
+  });
+}
+
 export async function sendMetaLeadEvent({
   env,
   lead,
@@ -100,6 +167,8 @@ export async function sendMetaLeadEvent({
   const requestUrl = new URL(`https://graph.facebook.com/${apiVersion}/${pixelId}/events`);
   requestUrl.searchParams.set("access_token", accessToken);
   const eventSourceUrl = buildEventSourceUrl({ lead, env });
+  const testEventCodeSent = Boolean(testEventCode);
+  const eventSourceUrlSent = Boolean(eventSourceUrl);
   const event = {
     event_name: "Lead",
     event_time: Math.floor(eventTime.getTime() / 1000),
@@ -122,7 +191,7 @@ export async function sendMetaLeadEvent({
     data: [event]
   };
 
-  if (testEventCode) {
+  if (testEventCodeSent) {
     payload.test_event_code = testEventCode;
   }
 
@@ -153,7 +222,19 @@ export async function sendMetaLeadEvent({
       }
     }
 
+    const responseSummary = buildMetaResponseSummary(responseData);
+
     if (!response.ok || responseData.error) {
+      logMetaDiagnostic({
+        status: response.status,
+        pixelId,
+        eventId,
+        testEventCodeSent,
+        eventSourceUrlSent,
+        responseSummary,
+        outcome: "meta_api_error"
+      });
+
       return {
         ok: false,
         skipped: false,
@@ -163,6 +244,16 @@ export async function sendMetaLeadEvent({
       };
     }
 
+    logMetaDiagnostic({
+      status: response.status,
+      pixelId,
+      eventId,
+      testEventCodeSent,
+      eventSourceUrlSent,
+      responseSummary,
+      outcome: "ok"
+    });
+
     return {
       ok: true,
       skipped: false,
@@ -171,12 +262,31 @@ export async function sendMetaLeadEvent({
       responseData
     };
   } catch (error) {
+    const errorCode = error?.name === "AbortError" ? "META_TIMEOUT" : "META_NETWORK_ERROR";
+    const errorMessage = String(error?.message || error);
+
+    logMetaDiagnostic({
+      status: 0,
+      pixelId,
+      eventId,
+      testEventCodeSent,
+      eventSourceUrlSent,
+      responseSummary: {
+        has_body: false,
+        error: {
+          message: errorMessage,
+          code: errorCode
+        }
+      },
+      outcome: "network_or_timeout"
+    });
+
     return {
       ok: false,
       skipped: false,
-      code: error?.name === "AbortError" ? "META_TIMEOUT" : "META_NETWORK_ERROR",
+      code: errorCode,
       status: 0,
-      error: String(error?.message || error)
+      error: errorMessage
     };
   } finally {
     clearTimeout(timeoutId);
