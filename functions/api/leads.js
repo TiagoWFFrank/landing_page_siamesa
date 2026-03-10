@@ -1,6 +1,6 @@
 import { hasLeadPipelineConfig, verifyTurnstileToken } from "../_lib/auth.js";
 import { AppsScriptWebhookError, appendLeadViaAppsScript } from "../_lib/apps-script.js";
-import { buildLeadRecord } from "../_lib/normalize.js";
+import { buildLeadRows } from "../_lib/normalize.js";
 import { errorJson, json, methodNotAllowed } from "../_lib/response.js";
 import { ValidationError, validateLeadPayload } from "../_lib/validate-lead.js";
 
@@ -77,21 +77,21 @@ export async function onRequest(context) {
       return errorJson(400, "TURNSTILE_ERROR", "Nao foi possivel validar a verificacao de seguranca.");
     }
 
-    const leadRecord = buildLeadRecord({
+    const leadBatch = buildLeadRows({
       lead,
       leadId: crypto.randomUUID(),
       createdAt: new Date(),
       contactNumber: env.SIAMESA_WHATSAPP_NUMBER
     });
 
-    await appendLeadViaAppsScript(env, leadRecord);
+    await appendLeadViaAppsScript(env, leadBatch.rows);
 
     return json({
       ok: true,
-      lead_id: leadRecord.lead_id,
-      created_at_utc: leadRecord.created_at_utc,
-      created_at_brt: leadRecord.created_at_brt,
-      whatsapp_url: leadRecord.whatsapp_url
+      lead_id: leadBatch.lead_id,
+      created_at_utc: leadBatch.created_at_utc,
+      created_at_brt: leadBatch.created_at_brt,
+      whatsapp_url: leadBatch.whatsapp_url
     });
   } catch (error) {
     if (error instanceof ValidationError) {

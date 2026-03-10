@@ -9,20 +9,11 @@ var HEADER_ALIASES = {
   unidade_desejada: "unit",
   data_hora: "created_at_brt",
   data_cadastro: "created_at_brt",
-  data: "created_date_brt",
-  hora: "created_time_brt",
   quantidade_filhos: "children_count",
   total_filhos: "children_count",
-  filho_1_nome: "child_1_name",
-  filho_1_idade: "child_1_age",
-  filho_2_nome: "child_2_name",
-  filho_2_idade: "child_2_age",
-  filho_3_nome: "child_3_name",
-  filho_3_idade: "child_3_age",
-  filho_4_nome: "child_4_name",
-  filho_4_idade: "child_4_age",
-  filho_5_nome: "child_5_name",
-  filho_5_idade: "child_5_age",
+  indice_filho: "child_index",
+  nome_filho: "child_name",
+  idade_filho: "child_age",
   mensagem_whatsapp: "whatsapp_message",
   url_whatsapp: "whatsapp_url",
   pagina: "page_path",
@@ -30,6 +21,20 @@ var HEADER_ALIASES = {
   status: "lead_status",
   origem: "source"
 };
+
+var REQUIRED_ROW_FIELDS = [
+  "lead_id",
+  "created_at_utc",
+  "created_at_brt",
+  "responsible_name",
+  "whatsapp",
+  "whatsapp_digits",
+  "unit",
+  "child_index",
+  "child_name",
+  "child_age",
+  "children_count"
+];
 
 function doPost(e) {
   try {
@@ -43,13 +48,12 @@ function doPost(e) {
       return jsonResponse_({ ok: false, error: "UNAUTHORIZED" });
     }
 
-    var validationError = validatePayload_(payload);
-    if (validationError) {
-      return jsonResponse_({ ok: false, error: validationError });
+    var rowsResult = extractRows_(payload);
+    if (!rowsResult.ok) {
+      return jsonResponse_({ ok: false, error: rowsResult.error });
     }
 
-    var sheetName = getSheetName_();
-    var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+    var sheet = getTargetSheet_();
     if (!sheet) {
       return jsonResponse_({ ok: false, error: "SHEET_NOT_FOUND" });
     }
@@ -59,13 +63,16 @@ function doPost(e) {
       return jsonResponse_({ ok: false, error: "EMPTY_HEADER" });
     }
 
-    var row = buildRowFromHeaders_(headers, payload);
-    sheet.appendRow(row);
+    var values = rowsResult.rows.map(function(row) {
+      return buildRowFromHeaders_(headers, row);
+    });
+
+    var nextRow = Math.max(sheet.getLastRow(), 1) + 1;
+    sheet.getRange(nextRow, 1, values.length, headers.length).setValues(values);
 
     return jsonResponse_({
       ok: true,
-      sheet: sheetName,
-      row_appended: true
+      rows_appended: values.length
     });
   } catch (error) {
     return jsonResponse_({
@@ -86,6 +93,7 @@ function parseJsonPayload_(e) {
     if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
       return { ok: false, error: "INVALID_PAYLOAD" };
     }
+
     return { ok: true, payload: payload };
   } catch (error) {
     return { ok: false, error: "INVALID_JSON" };
@@ -97,27 +105,41 @@ function isAuthorized_(payload) {
     PropertiesService.getScriptProperties().getProperty(WEBHOOK_SECRET_PROPERTY) || ""
   );
   var providedSecret = String(payload.webhook_secret || "");
+
   return Boolean(expectedSecret && providedSecret && expectedSecret === providedSecret);
 }
 
-function validatePayload_(payload) {
-  var normalized = normalizePayloadKeys_(payload);
-  var requiredFields = [
-    "lead_id",
-    "created_at_utc",
-    "created_at_brt",
-    "source",
-    "page_path",
-    "landing_context",
-    "responsible_name",
-    "whatsapp",
-    "whatsapp_digits",
-    "unit"
-  ];
+function extractRows_(payload) {
+  var candidateRows = Array.isArray(payload.rows) ? payload.rows : [payload];
+  if (!candidateRows.length) {
+    return { ok: false, error: "INVALID_ROWS" };
+  }
 
-  for (var i = 0; i < requiredFields.length; i += 1) {
-    var key = requiredFields[i];
-    if (!toCellValue_(normalized[key])) {
+  var rows = [];
+
+  for (var index = 0; index < candidateRows.length; index += 1) {
+    var row = normalizeLegacyRowPayload_(candidateRows[index]);
+    if (!row) {
+      return { ok: false, error: "INVALID_ROW_OBJECT" };
+    }
+
+    var validationError = validateRow_(row);
+    if (validationError) {
+      return { ok: false, error: validationError };
+    }
+
+    rows.push(row);
+  }
+
+  return { ok: true, rows: rows };
+}
+
+function validateRow_(payload) {
+  var normalized = normalizePayloadKeys_(payload);
+
+  for (var i = 0; i < REQUIRED_ROW_FIELDS.length; i += 1) {
+    var key = REQUIRED_ROW_FIELDS[i];
+    if (!hasCellValue_(normalized[key])) {
       return "MISSING_" + key.toUpperCase();
     }
   }
@@ -125,10 +147,12 @@ function validatePayload_(payload) {
   return "";
 }
 
-function getSheetName_() {
-  return String(
+function getTargetSheet_() {
+  var sheetName = String(
     PropertiesService.getScriptProperties().getProperty(SHEET_NAME_PROPERTY) || DEFAULT_SHEET_NAME
   );
+
+  return SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
 }
 
 function readHeaders_(sheet) {
@@ -149,10 +173,46 @@ function buildRowFromHeaders_(headers, payload) {
     if (!normalizedHeader) return "";
 
     var payloadKey = HEADER_ALIASES[normalizedHeader] || normalizedHeader;
-    if (payloadKey === "webhook_secret") return "";
+    if (payloadKey === "webhook_secret" || payloadKey === "rows") return "";
 
     return toCellValue_(normalizedPayload[payloadKey]);
   });
+}
+
+function normalizeLegacyRowPayload_(payload) {
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return null;
+  }
+
+  var normalized = normalizePayloadKeys_(payload);
+  var row = {};
+
+  Object.keys(normalized).forEach(function(key) {
+    if (key === "rows") return;
+    row[key] = normalized[key];
+  });
+
+  if (!hasCellValue_(row.child_name) && hasCellValue_(normalized.child_1_name)) {
+    row.child_name = normalized.child_1_name;
+  }
+
+  if (!hasCellValue_(row.child_age) && hasCellValue_(normalized.child_1_age)) {
+    row.child_age = normalized.child_1_age;
+  }
+
+  if (!hasCellValue_(row.child_index) && hasCellValue_(row.child_name)) {
+    row.child_index = 1;
+  }
+
+  if (!hasCellValue_(row.children_count)) {
+    row.children_count =
+      normalized.children_count ||
+      normalized.total_filhos ||
+      normalized.quantidade_filhos ||
+      (hasCellValue_(row.child_name) ? 1 : "");
+  }
+
+  return row;
 }
 
 function normalizePayloadKeys_(payload) {
@@ -179,10 +239,14 @@ function normalizeKey_(value) {
     .replace(/^_|_$/g, "");
 }
 
+function hasCellValue_(value) {
+  return toCellValue_(value) !== "";
+}
+
 function toCellValue_(value) {
   if (value === null || value === undefined) return "";
   if (typeof value === "string") return value.trim();
-  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  if (typeof value === "number" || typeof value === "boolean") return value;
 
   try {
     return JSON.stringify(value);

@@ -1,4 +1,9 @@
-import { normalizeBrazilWhatsappDigits, sanitizeOptionalText, sanitizeText } from "./normalize.js";
+import {
+  formatBrazilWhatsapp,
+  normalizeBrazilWhatsappDigits,
+  sanitizeOptionalText,
+  sanitizeText
+} from "./normalize.js";
 
 const EXPECTED_UNIT = "sao bernardo do campo/sp";
 
@@ -84,7 +89,7 @@ export function validateLeadPayload(payload) {
     page_path: sanitizeText(payload.page_path || "/cadastro", { maxLength: 80 }) || "/cadastro",
     landing_context: sanitizeText(payload.landing_context || "SBC", { maxLength: 50 }) || "SBC",
     responsible_name: responsibleName,
-    whatsapp,
+    whatsapp: formatBrazilWhatsapp(whatsappDigits),
     whatsapp_digits: whatsappDigits,
     unit,
     children,
@@ -97,6 +102,8 @@ export function validateLeadPayload(payload) {
     gclid: sanitizeOptionalText(payload.gclid, { maxLength: 255 }),
     referrer: sanitizeOptionalText(payload.referrer, { maxLength: 500 }),
     user_agent: sanitizeOptionalText(payload.user_agent, { maxLength: 500 }),
+    lead_status: sanitizeText(payload.lead_status || "novo", { maxLength: 50 }) || "novo",
+    obs_tecnica: sanitizeOptionalText(payload.obs_tecnica, { maxLength: 500 }),
     turnstile_token: sanitizeOptionalText(payload.turnstile_token, { maxLength: 4096 })
   };
 }

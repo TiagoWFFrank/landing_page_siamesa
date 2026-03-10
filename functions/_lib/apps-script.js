@@ -9,12 +9,16 @@ export class AppsScriptWebhookError extends Error {
   }
 }
 
-export async function appendLeadViaAppsScript(env, leadRecord) {
+export async function appendLeadViaAppsScript(env, rows) {
   const webhookUrl = env.SIAMESA_APPS_SCRIPT_WEBHOOK_URL;
   const webhookSecret = env.APPS_SCRIPT_SHARED_SECRET;
 
   if (!webhookUrl || !webhookSecret) {
     throw new Error("Apps Script webhook is not configured.");
+  }
+
+  if (!Array.isArray(rows) || rows.length < 1) {
+    throw new Error("At least one row is required to append a lead.");
   }
 
   const controller = new AbortController();
@@ -31,7 +35,7 @@ export async function appendLeadViaAppsScript(env, leadRecord) {
       signal: controller.signal,
       body: JSON.stringify({
         webhook_secret: webhookSecret,
-        ...leadRecord
+        rows
       })
     });
   } catch (error) {
@@ -77,6 +81,20 @@ export async function appendLeadViaAppsScript(env, leadRecord) {
     throw new AppsScriptWebhookError(
       "REJECTED",
       `Apps Script webhook rejected payload (${responseData?.error || "UNKNOWN_ERROR"}).`,
+      {
+        status: response.status,
+        responseData
+      }
+    );
+  }
+
+  if (
+    typeof responseData?.rows_appended === "number" &&
+    responseData.rows_appended !== rows.length
+  ) {
+    throw new AppsScriptWebhookError(
+      "ROW_COUNT_MISMATCH",
+      `Apps Script appended ${responseData.rows_appended} rows for ${rows.length} requested rows.`,
       {
         status: response.status,
         responseData

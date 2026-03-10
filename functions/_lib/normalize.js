@@ -28,6 +28,21 @@ export function normalizeBrazilWhatsappDigits(value) {
   return digits;
 }
 
+export function formatBrazilWhatsapp(value) {
+  const digits = normalizeBrazilWhatsappDigits(value);
+  const localDigits = digits.startsWith("55") ? digits.slice(2) : digits;
+
+  if (localDigits.length === 10) {
+    return `(${localDigits.slice(0, 2)}) ${localDigits.slice(2, 6)}-${localDigits.slice(6)}`;
+  }
+
+  if (localDigits.length === 11) {
+    return `(${localDigits.slice(0, 2)}) ${localDigits.slice(2, 7)}-${localDigits.slice(7)}`;
+  }
+
+  return sanitizeText(value, { maxLength: 30 });
+}
+
 export function getTimestampFields(date = new Date()) {
   const parts = new Intl.DateTimeFormat("sv-SE", {
     timeZone: BRT_TIMEZONE,
@@ -80,45 +95,57 @@ export function buildWhatsAppUrl(phoneNumber, message) {
   return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 }
 
-export function buildLeadRecord({ lead, leadId, createdAt, contactNumber }) {
+export function buildLeadRows({ lead, leadId, createdAt, contactNumber }) {
   const timestamps = getTimestampFields(createdAt);
   const whatsappContact = normalizeBrazilWhatsappDigits(contactNumber);
   const children = lead.children;
-  const record = {
+  const whatsappMessage = buildWhatsAppMessage({
     lead_id: leadId,
-    ...timestamps,
-    source: lead.source,
-    page_path: lead.page_path,
-    landing_context: lead.landing_context,
+    responsible_name: lead.responsible_name,
+    whatsapp: lead.whatsapp,
+    unit: lead.unit,
+    children
+  });
+  const whatsappUrl = buildWhatsAppUrl(whatsappContact, whatsappMessage);
+  const baseRow = {
+    lead_id: leadId,
+    created_at_utc: timestamps.created_at_utc,
+    created_at_brt: timestamps.created_at_brt,
     responsible_name: lead.responsible_name,
     whatsapp: lead.whatsapp,
     whatsapp_digits: lead.whatsapp_digits,
     unit: lead.unit,
-    children_count: children.length
+    children_count: children.length,
+    whatsapp_message: whatsappMessage,
+    whatsapp_url: whatsappUrl,
+    page_path: lead.page_path,
+    referrer: lead.referrer,
+    utm_source: lead.utm_source,
+    utm_medium: lead.utm_medium,
+    utm_campaign: lead.utm_campaign,
+    utm_content: lead.utm_content,
+    utm_term: lead.utm_term,
+    fbclid: lead.fbclid,
+    gclid: lead.gclid,
+    landing_context: lead.landing_context,
+    source: lead.source,
+    lead_status: lead.lead_status,
+    obs_tecnica: lead.obs_tecnica
   };
 
-  for (let index = 0; index < 5; index += 1) {
-    const child = children[index];
-    record[`child_${index + 1}_name`] = child?.name || "";
-    record[`child_${index + 1}_age`] = child?.age || "";
-  }
+  const rows = children.map((child, index) => ({
+    ...baseRow,
+    child_index: index + 1,
+    child_name: child.name,
+    child_age: child.age
+  }));
 
-  record.children_json = JSON.stringify(children);
-  record.whatsapp_message = buildWhatsAppMessage({
-    ...record,
-    children
-  });
-  record.whatsapp_url = buildWhatsAppUrl(whatsappContact, record.whatsapp_message);
-  record.utm_source = lead.utm_source;
-  record.utm_medium = lead.utm_medium;
-  record.utm_campaign = lead.utm_campaign;
-  record.utm_content = lead.utm_content;
-  record.utm_term = lead.utm_term;
-  record.fbclid = lead.fbclid;
-  record.gclid = lead.gclid;
-  record.referrer = lead.referrer;
-  record.user_agent = lead.user_agent;
-  record.lead_status = "novo";
-
-  return record;
+  return {
+    lead_id: leadId,
+    created_at_utc: timestamps.created_at_utc,
+    created_at_brt: timestamps.created_at_brt,
+    whatsapp_message: whatsappMessage,
+    whatsapp_url: whatsappUrl,
+    rows
+  };
 }

@@ -1,5 +1,5 @@
 (() => {
-  const SIAMESA_WHATSAPP_NUMBER = "5511963998061";
+  const SIAMESA_WHATSAPP_NUMBER = "5511911940366";
   const STATIC_MESSAGE = "Olá! Quero informações sobre matrícula no Projeto Bombeiro Mirim.";
   const DEFAULT_UNIT = "São Bernardo do Campo/SP";
   const MAX_CHILDREN = 5;
@@ -293,14 +293,6 @@
     turnstileNote.textContent = "Confirme a verificação de segurança antes de enviar.";
   }
 
-  function resetFormAfterSuccess() {
-    enrollmentForm.reset();
-    enrollmentForm.elements.unit.value = DEFAULT_UNIT;
-    whatsappInput.setCustomValidity("");
-    resetChildren();
-    resetTurnstile();
-  }
-
   async function handleSubmit(event) {
     event.preventDefault();
     clearFeedback();
@@ -326,7 +318,6 @@
     if (!enrollmentForm.reportValidity()) return;
 
     const payload = buildPayload(children, syncTracking());
-    const pendingPopup = window.open("about:blank", "_blank", "noopener");
     setSubmitting(true);
 
     try {
@@ -339,39 +330,27 @@
       });
 
       const result = await response.json().catch(() => ({}));
-      if (!response.ok || !result.ok) {
+      if (!response.ok || !result.ok || !result.whatsapp_url) {
         throw new Error(result.message || "Nao foi possivel concluir o cadastro agora.");
       }
 
-      showFeedback("Cadastro salvo com sucesso. Se o WhatsApp nao abrir automaticamente, use o botao abaixo.", {
+      showFeedback("Cadastro salvo com sucesso. Redirecionando para o WhatsApp...", {
         url: result.whatsapp_url
       });
-
-      if (pendingPopup && !pendingPopup.closed) {
-        pendingPopup.location.replace(result.whatsapp_url);
-      } else {
-        const popup = window.open(result.whatsapp_url, "_blank", "noopener");
-        if (!popup) {
-          feedbackLink.focus();
-        }
-      }
 
       if (window.fbq) {
         window.fbq("track", "Lead");
       }
 
-      resetFormAfterSuccess();
+      window.setTimeout(() => {
+        window.location.href = result.whatsapp_url;
+      }, 150);
     } catch {
-      if (pendingPopup && !pendingPopup.closed) {
-        pendingPopup.close();
-      }
-
       showFeedback("Nao foi possivel salvar seu cadastro agora. Voce pode falar com a equipe no WhatsApp, mas este cadastro nao foi gravado.", {
         isError: true,
         url: buildWhatsAppUrl(STATIC_MESSAGE)
       });
       resetTurnstile();
-    } finally {
       setSubmitting(false);
     }
   }
