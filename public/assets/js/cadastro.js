@@ -136,10 +136,19 @@
   }
 
   function formatWhatsApp(value) {
-    const digits = value.replace(/\D/g, "").slice(0, 11);
-    if (digits.length <= 2) return digits ? `(${digits}` : "";
-    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    const digits = value.replace(/\D/g, "").slice(0, 13);
+    const hasCountryCode = digits.startsWith("55");
+    const localDigits = hasCountryCode ? digits.slice(2, 13) : digits.slice(0, 11);
+    const prefix = hasCountryCode ? "+55 " : "";
+
+    if (!localDigits.length) return prefix;
+    if (localDigits.length <= 2) return `${prefix}(${localDigits}`;
+    if (localDigits.length <= 6) return `${prefix}(${localDigits.slice(0, 2)}) ${localDigits.slice(2)}`;
+    if (localDigits.length <= 10) {
+      return `${prefix}(${localDigits.slice(0, 2)}) ${localDigits.slice(2, 6)}-${localDigits.slice(6)}`;
+    }
+
+    return `${prefix}(${localDigits.slice(0, 2)}) ${localDigits.slice(2, 7)}-${localDigits.slice(7)}`;
   }
 
   function validateChildFields(children) {
@@ -306,8 +315,9 @@
     }
 
     const whatsappDigits = enrollmentForm.elements.whatsapp.value.replace(/\D/g, "");
+    const localWhatsappDigits = whatsappDigits.startsWith("55") ? whatsappDigits.slice(2) : whatsappDigits;
     enrollmentForm.elements.whatsapp.setCustomValidity(
-      whatsappDigits.length >= 10 && whatsappDigits.length <= 11 ? "" : "Informe um WhatsApp com DDD."
+      localWhatsappDigits.length >= 10 && localWhatsappDigits.length <= 11 ? "" : "Informe um WhatsApp com DDD."
     );
 
     if (turnstileEnabled && !turnstileToken) {
