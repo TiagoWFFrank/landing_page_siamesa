@@ -7,11 +7,11 @@
     "SIAMESA_APPS_SCRIPT_WEBHOOK_URL": "https://script.google.com/macros/s/AKfycbxA8ae-LjHekCN9IUU8Wf3WQaGB8YpK5Q1xtv-VfAoO8JpOY0-vCvfhhhmO_Yr5y5xusA/exec",
     "SIAMESA_WHATSAPP_NUMBER": "5511911940366",
     "META_PIXEL_ID": "1645380376472593",
-    "META_TEST_EVENT_CODE": "",
+    "META_TEST_EVENT_CODE": "TEST48293",
     "META_ENABLE_ADVANCED_MATCHING": "true",
     "META_DATASET_ID": "",
     "META_API_VERSION": "v22.0",
-    "SIAMESA_SITE_URL": "https://www.example.com"
+    "SIAMESA_SITE_URL": "https://www.siamesaa.com.br"
   },
   "dev": {
     "port": 3002

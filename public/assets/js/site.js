@@ -22,10 +22,21 @@
 
   let whatsappNumber = FALLBACK_WHATSAPP_NUMBER;
 
+  function pickTrackingValues(source) {
+    const tracking = {};
+
+    for (const key of TRACKING_KEYS) {
+      const value = String(source?.[key] || "").trim();
+      if (value) tracking[key] = value;
+    }
+
+    return tracking;
+  }
+
   function getStoredTracking() {
     try {
       const rawValue = window.sessionStorage.getItem(TRACKING_STORAGE_KEY);
-      return rawValue ? JSON.parse(rawValue) : {};
+      return pickTrackingValues(rawValue ? JSON.parse(rawValue) : {});
     } catch {
       return {};
     }
@@ -44,7 +55,7 @@
   }
 
   function getMetaTrackingData() {
-    return window.SiamesaMeta?.getMetaBrowserIdentifiers?.() || {};
+    return pickTrackingValues(window.SiamesaMeta?.getMetaBrowserIdentifiers?.() || {});
   }
 
   function persistTracking(tracking) {
@@ -56,11 +67,11 @@
   }
 
   function syncTracking() {
-    const mergedTracking = {
+    const mergedTracking = pickTrackingValues({
       ...getStoredTracking(),
       ...getTrackingFromUrl(),
       ...getMetaTrackingData()
-    };
+    });
 
     persistTracking(mergedTracking);
     return mergedTracking;

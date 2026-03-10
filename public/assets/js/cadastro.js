@@ -15,6 +15,15 @@
     "fbp",
     "fbc"
   ];
+  const EVENT_SOURCE_URL_KEYS = [
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "utm_content",
+    "utm_term",
+    "fbclid",
+    "gclid"
+  ];
 
   const childList = document.getElementById("childList");
   const childTemplate = document.getElementById("childTemplate");
@@ -39,10 +48,31 @@
     return `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
   }
 
+  function pickTrackingValues(source) {
+    const tracking = {};
+
+    for (const key of TRACKING_KEYS) {
+      const value = String(source?.[key] || "").trim();
+      if (value) tracking[key] = value;
+    }
+
+    return tracking;
+  }
+
+  function mergeTrackingValues(...sources) {
+    const merged = {};
+
+    for (const source of sources) {
+      Object.assign(merged, pickTrackingValues(source));
+    }
+
+    return merged;
+  }
+
   function getStoredTracking() {
     try {
       const rawValue = window.sessionStorage.getItem(TRACKING_STORAGE_KEY);
-      return rawValue ? JSON.parse(rawValue) : {};
+      return pickTrackingValues(rawValue ? JSON.parse(rawValue) : {});
     } catch {
       return {};
     }
@@ -61,7 +91,11 @@
   }
 
   function getMetaTrackingData() {
-    return window.SiamesaMeta?.getMetaBrowserIdentifiers?.() || {};
+    const rawMetaTracking = window.SiamesaMeta?.getMetaBrowserIdentifiers?.() || {};
+    return {
+      ...pickTrackingValues(rawMetaTracking),
+      event_source_url: String(rawMetaTracking.event_source_url || "").trim()
+    };
   }
 
   function persistTracking(tracking) {
@@ -73,14 +107,60 @@
   }
 
   function syncTracking() {
-    const mergedTracking = {
-      ...getStoredTracking(),
-      ...getTrackingFromUrl(),
-      ...getMetaTrackingData()
-    };
+    const mergedTracking = mergeTrackingValues(
+      getStoredTracking(),
+      getTrackingFromUrl(),
+      getMetaTrackingData()
+    );
 
     persistTracking(mergedTracking);
     return mergedTracking;
+  }
+
+  function ensureTrackingInCurrentUrl(tracking) {
+    if (!window.history?.replaceState) return;
+
+    try {
+      const url = new URL(window.location.href);
+      let changed = false;
+
+      for (const key of EVENT_SOURCE_URL_KEYS) {
+        const value = String(tracking[key] || "").trim();
+        if (!value) continue;
+        if (url.searchParams.get(key) === value) continue;
+
+        url.searchParams.set(key, value);
+        changed = true;
+      }
+
+      if (changed) {
+        window.history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+      }
+    } catch {
+      /* noop */
+    }
+  }
+
+  function buildEventSourceUrl(tracking, metaTracking) {
+    const baseUrl = String(metaTracking.event_source_url || window.location.href.split("#")[0] || "").trim();
+    if (!baseUrl) return "";
+
+    try {
+      const url = new URL(baseUrl);
+
+      for (const key of EVENT_SOURCE_URL_KEYS) {
+        const value = String(tracking[key] || "").trim();
+        if (!value) continue;
+        if (!url.searchParams.get(key)) {
+          url.searchParams.set(key, value);
+        }
+      }
+
+      url.hash = "";
+      return url.toString();
+    } catch {
+      return baseUrl;
+    }
   }
 
   function applyStaticWhatsAppLink() {
@@ -215,7 +295,7 @@
   }
 
   function buildPayload(children, tracking, metaTracking, eventId) {
-    const eventSourceUrl = metaTracking.event_source_url || window.location.href.split("#")[0] || "";
+    const eventSourceUrl = buildEventSourceUrl(tracking, metaTracking);
 
     return {
       source: "lp_siamesa_cadastro",
@@ -328,7 +408,8 @@
       applyStaticWhatsAppLink();
     }
 
-    syncTracking();
+    const tracking = syncTracking();
+    ensureTrackingInCurrentUrl(tracking);
 
     if (window.SiamesaMeta?.initMetaPixel) {
       window.SiamesaMeta.initMetaPixel(runtimeConfig);
@@ -367,8 +448,10 @@
 
     const tracking = syncTracking();
     const metaTracking = getMetaTrackingData();
+    const mergedTracking = mergeTrackingValues(tracking, metaTracking);
+    ensureTrackingInCurrentUrl(mergedTracking);
     const eventId = window.SiamesaMeta?.getOrCreateLeadEventId?.() || `lead_${Date.now()}_${Math.random().toString(16).slice(2, 10)}`;
-    const payload = buildPayload(children, tracking, metaTracking, eventId);
+    const payload = buildPayload(children, mergedTracking, metaTracking, eventId);
     setSubmitting(true);
 
     try {

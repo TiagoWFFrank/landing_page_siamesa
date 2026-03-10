@@ -1,6 +1,7 @@
 (() => {
   const HEALTH_ENDPOINT = "/api/health";
   const META_COOKIE_MAX_AGE_SECONDS = 90 * 24 * 60 * 60;
+  const META_FBCLID_STORAGE_KEY = "siamesa_meta_fbclid";
 
   let runtimeConfigPromise = null;
   let pixelScriptPromise = null;
@@ -41,6 +42,76 @@
     }
   }
 
+  function getFbclidFromFbc(fbc) {
+    const value = normalizeText(fbc, 255);
+    if (!value) return "";
+    const parts = value.split(".");
+    return parts.length >= 4 ? normalizeText(parts.slice(3).join("."), 255) : "";
+  }
+
+  function getFbclidFromReferrer() {
+    const referrer = normalizeText(document.referrer, 2000);
+    if (!referrer) return "";
+
+    try {
+      const referrerUrl = new URL(referrer);
+      const directFbclid = normalizeText(referrerUrl.searchParams.get("fbclid"), 255);
+      if (directFbclid) return directFbclid;
+
+      const encodedTarget = normalizeText(referrerUrl.searchParams.get("u"), 4000);
+      if (!encodedTarget) return "";
+
+      const targetUrl = new URL(decodeURIComponent(encodedTarget));
+      return normalizeText(targetUrl.searchParams.get("fbclid"), 255);
+    } catch {
+      return "";
+    }
+  }
+
+  function getStoredFbclid() {
+    try {
+      return normalizeText(window.sessionStorage.getItem(META_FBCLID_STORAGE_KEY), 255);
+    } catch {
+      return "";
+    }
+  }
+
+  function storeFbclid(fbclid) {
+    const value = normalizeText(fbclid, 255);
+    if (!value) return;
+
+    try {
+      window.sessionStorage.setItem(META_FBCLID_STORAGE_KEY, value);
+    } catch {
+      /* noop */
+    }
+  }
+
+  function resolveFbclid() {
+    const fromUrl = getFbclidFromUrl();
+    if (fromUrl) {
+      storeFbclid(fromUrl);
+      return fromUrl;
+    }
+
+    const fromStored = getStoredFbclid();
+    if (fromStored) return fromStored;
+
+    const fromFbc = getFbclidFromFbc(getCookie("_fbc"));
+    if (fromFbc) {
+      storeFbclid(fromFbc);
+      return fromFbc;
+    }
+
+    const fromReferrer = getFbclidFromReferrer();
+    if (fromReferrer) {
+      storeFbclid(fromReferrer);
+      return fromReferrer;
+    }
+
+    return "";
+  }
+
   function buildFbcFromFbclid(fbclid) {
     if (!fbclid) return "";
     return `fb.1.${Date.now()}.${fbclid}`;
@@ -50,7 +121,7 @@
     const existingFbc = getCookie("_fbc");
     if (existingFbc) return existingFbc;
 
-    const fbclid = getFbclidFromUrl();
+    const fbclid = resolveFbclid();
     const derivedFbc = buildFbcFromFbclid(fbclid);
     if (derivedFbc) {
       setCookie("_fbc", derivedFbc);
@@ -192,7 +263,7 @@
   }
 
   function getMetaBrowserIdentifiers() {
-    const fbclid = getFbclidFromUrl();
+    const fbclid = resolveFbclid();
     const fbc = getCookie("_fbc") || ensureFbcCookie();
     const fbp = getCookie("_fbp");
 
